@@ -1,0 +1,23 @@
+{
+  "name": "mostka/phptojs",
+  "description": "Php to JS comventor",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jozef Môstka",
+      "email": "jozef@mostka.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "phptojs\\": "lib/PhpToJs"
+    }
+  },
+  "require": {
+    "nikic/php-parser": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.0.0"
+  }
+}

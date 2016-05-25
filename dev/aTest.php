@@ -16,7 +16,8 @@ if (!checkNodeJs()){
 require_once "../vendor/autoload.php";
 
 
-$code = file_get_contents(__DIR__."/simple.test.php");
+//$code = file_get_contents(__DIR__."/simple.test.php");
+$code = file_get_contents("/home/mostkaj/projects/PhpTpJs/test/code/jsPrinter/phpSrc/global/multiline.js.php");
 
 $parser = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
 $prettyPrinter = new \phptojs\JsPrinter\NonPrivate();
@@ -24,6 +25,7 @@ $prettyPrinter = new \phptojs\JsPrinter\NonPrivate();
 try {
     // parse
     $stmts = $parser->parse($code);
+//    var_dump($stmts);exit;
     //var_dump($stmts[0]);exit;
     // pretty print
     $code = $prettyPrinter->jsPrint($stmts);

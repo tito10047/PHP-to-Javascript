@@ -325,10 +325,50 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_Encapsed(Scalar\Encapsed $node) {
+        if ($node->getAttribute('kind') === Scalar\String_::KIND_HEREDOC) {
+            $label = $node->getAttribute('docLabel');
+            if ($label && !$this->encapsedContainsEndLabel($node->parts, $label)) {
+                if (count($node->parts) === 1
+                    && $node->parts[0] instanceof Scalar\EncapsedStringPart
+                    && $node->parts[0]->value === ''
+                ) {
+                    $str = $this->pNoIndent("<<<$label\n$label") . $this->docStringEndToken;
+                    $this->print_($str);
+                    return;
+                }
+                self::notImplemented(true,"encapsed strig with <<<");
+                $str = $this->pNoIndent(
+                    "<<<$label\n" . $this->pEncapsList($node->parts, null) . "\n$label"
+                ) . $this->docStringEndToken;
+                $this->print_($str);
+            }
+        }
         $this->print_('"');
         $this->pEncapsList($node->parts, '"');
-        $this->println('"');
+        $this->print_('"');
+        $this->println();
     }
+
+    protected function encapsedContainsEndLabel(array $parts, $label) {
+        foreach ($parts as $i => $part) {
+            $atStart = $i === 0;
+            $atEnd = $i === count($parts) - 1;
+            if ($part instanceof Scalar\EncapsedStringPart
+                && $this->containsEndLabel($part->value, $label, $atStart, $atEnd)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function containsEndLabel($string, $label, $atStart = true, $atEnd = true) {
+        $start = $atStart ? '(?:^|[\r\n])' : '[\r\n]';
+        $end = $atEnd ? '(?:$|[;\r\n])' : '[;\r\n]';
+        return false !== strpos($string, $label)
+        && preg_match('/' . $start . $label . $end . '/', $string);
+    }
+
 
     public function pScalar_LNumber(Scalar\LNumber $node) {
         $this->print_((string) $node->value);
@@ -1309,15 +1349,19 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Break(Stmt\Break_ $node) {
-        // TODO: Implement pStmt_Break() method.
+        $name='';
+        if ($node->num !== null){
+            $name = ' '.$this->closureHelper->getLoopName($node->num);
+        }
+        $this->println('break %{name};',$name);
     }
 
     public function pStmt_Continue(Stmt\Continue_ $node) {
         $name='';
         if ($node->num !== null){
-            $name = ' '.$this->closureHelper->getLoopName($node->num);//TODO
+            $name = ' '.$this->closureHelper->getLoopName($node->num);
         }
-        $this->println('break %{name};',$name);
+        $this->println('continue %{name};',$name);
     }
 
     public function pStmt_Return(Stmt\Return_ $node) {
@@ -1409,8 +1453,23 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pEncapsList(array $encapsList, $quote) {
-        // TODO: Implement pEncapsList() method.
-        self::notImplemented(true,__METHOD__);
+        $str = '';
+        foreach ($encapsList as $element) {
+            if (is_string($element)) {
+                $str = addcslashes($element, '\'\\');
+                $str = str_replace(PHP_EOL,'\n\\'.PHP_EOL,$str);
+                $this->print_($str);
+                //$str .= addcslashes($element, "\n\r\t\f\v$" . $quote . "\\");
+            } else {
+                if ($element instanceof Scalar\EncapsedStringPart){
+                    $this->print_("\\n\\\n");
+                    continue;
+                }
+                $this->print_('"+');
+                $this->p($element);
+                $this->print_('+"');
+            }
+        }
     }
 
     public function pDereferenceLhs(Node $node) {

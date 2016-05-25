@@ -6,7 +6,7 @@
  * Time: 19:27
  */
 
-namespace PhpToJs\Printer;
+namespace phptojs\Printer;
 
 
 class SourceWriter implements SourceWriterInterface{
@@ -51,9 +51,11 @@ class SourceWriter implements SourceWriterInterface{
 
     private $lastDelay;
     private $lastKey=0;
+
     /**
      * @param null $id
      * @return $this
+     * @throws \Exception
      */
     public function popDelay(&$id=null){
         $this->delayStack[ $id = $this->lastDelay = $this->lastKey++ ]=$this->code;
@@ -156,6 +158,12 @@ class SourceWriter implements SourceWriterInterface{
     }
 
     public function getCode(){
+        if (count($this->delayStack)>0){
+            throw new \Exception("DelayStack is not empty (".count($this->delayStack).")");
+        }
+        if (count($this->codeStack)>0){
+            throw new \Exception("CodeStack is not empty (".count($this->codeStack).")");
+        }
         return $this->finalCode.$this->code;
     }
     public function getResetCode(){

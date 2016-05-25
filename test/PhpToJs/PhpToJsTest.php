@@ -15,6 +15,8 @@ namespace{
 }
 namespace PhpTpJs {
 
+    use phptojs\JsPrinter\JsPrinterAbstract;
+
     class NodeJsException extends \Exception {
     }
 
@@ -35,31 +37,31 @@ namespace PhpTpJs {
             }
             $this->nodeJsExist = true;
             $s = DIRECTORY_SEPARATOR;
-            $this->PATH_SRC_PHP = __DIR__ . "{$s}..{$s}..{$s}code{$s}jsPrinter{$s}phpSrc{$s}";
-            $this->PATH_SRC_JS = __DIR__ . "{$s}..{$s}..{$s}code{$s}jsPrinter{$s}jsSrc{$s}generated{$s}";
-            $this->PATH_TO_JS_TEST = __DIR__ . "{$s}..{$s}..{$s}code{$s}jsPrinter{$s}jsSrc{$s}runTest.js";
-            $this->PATH_TO_PHP_TEST = __DIR__ . "{$s}..{$s}..{$s}code{$s}jsPrinter{$s}phpSrc{$s}runTest.php";
+            $this->PATH_SRC_PHP = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}phpSrc{$s}";
+            $this->PATH_SRC_JS = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}jsSrc{$s}generated{$s}";
+            $this->PATH_TO_JS_TEST = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}jsSrc{$s}runTest.js";
+            $this->PATH_TO_PHP_TEST = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}phpSrc{$s}runTest.php";
             $this->phpGlobalFiles = self::getFiles($this->PATH_SRC_PHP . 'global', "js.php");
             JsPrinterAbstract::$showWarnings = false;
             JsPrinterAbstract::$throwErrors = false;
         }
 
         /**
-         * @dataProvider provideTestJsNonPrivate
-         * @covers       Printer\JsPrinter\NonPrivate<extended>
+         * @dataProvider provideTestNonPrivate
+         * @covers       phptojs\JsPrinter\<extended>
          */
-        public function testJsNonPrivate($class, $fileName, $filePath) {
+        public function testNonPrivate($class, $fileName, $filePath) {
             $this->doTestJsPrintClass($class, $fileName, $filePath);
         }
 
-        public function provideTestJsNonPrivate() {
+        public function provideTestNonPrivate() {
             return $this->getTests("NonPrivate");
         }
 
         protected function doTestJsPrintClass($printerClassName, $fileName, $filePath) {
             $jsFilePath = $this->PATH_SRC_JS . $printerClassName . DIRECTORY_SEPARATOR . $fileName . '.js';
 
-            $className = '\PhpParser\Printer\JsPrinter\\' . $printerClassName;
+            $className = '\phptojs\JsPrinter\\' . $printerClassName;
             /** @var JsPrinterAbstract $jsPrinter */
             $jsPrinter = new $className();
             if (!$jsPrinter->jsPrintFileTo($filePath, $jsFilePath)) {
@@ -145,7 +147,7 @@ namespace PhpTpJs {
 
         protected function getFiles($directory, $fileExtension) {
             if (!file_exists($directory)) {
-                $this->throw(new \Exception("directory not exist '{$directory}'"));
+                $this->throwException(new \Exception("directory not exist '{$directory}'"));
                 return array();
             }
             $it = new \RecursiveDirectoryIterator($directory);

@@ -5,7 +5,7 @@
  * Date: 24.5.2016
  * Time: 19:20
  */
-namespace PhpToJs\JsPrinter;
+namespace phptojs\JsPrinter;
 
 use PhpParser\Comment;
 use PhpParser\Node;
@@ -21,79 +21,6 @@ use PhpParser\Node\Stmt;
 interface JsPrinterInterface {
 
 
-    /**
-     * Pretty prints an array of nodes (statements) and indents them optionally.
-     *
-     * @param Node[] $nodes Array of nodes
-     * @param bool $indent Whether to indent the printed nodes
-     *
-     * @return string Pretty printed statements
-     */
-    public function pStmts(array $nodes, $indent = true);
-
-    /**
-     * Pretty prints a node.
-     *
-     * @param Node $node Node to be pretty printed
-     *
-     * @return string Pretty printed node
-     */
-    public function p(Node $node);
-
-    public function pPrefixOp($type, $operatorString, Node $node);
-
-    public function pPostfixOp($type, Node $node, $operatorString);
-
-    /**
-     * Prints an expression node with the least amount of parentheses necessary to preserve the meaning.
-     *
-     * @param Node $node Node to pretty print
-     * @param int $parentPrecedence Precedence of the parent operator
-     * @param int $parentAssociativity Associativity of parent operator
-     *                                  (-1 is left, 0 is nonassoc, 1 is right)
-     * @param int $childPosition Position of the node relative to the operator
-     *                                  (-1 is left, 1 is right)
-     *
-     * @return string The pretty printed node
-     */
-    public function pPrec(Node $node, $parentPrecedence, $parentAssociativity, $childPosition);
-
-    /**
-     * Pretty prints an array of nodes and implodes the printed values.
-     *
-     * @param Node[] $nodes Array of Nodes to be printed
-     * @param string $glue Character to implode with
-     *
-     * @return string Imploded pretty printed nodes
-     */
-    public function pImplode(array $nodes, $glue = '');
-
-    /**
-     * Pretty prints an array of nodes and implodes the printed values with commas.
-     *
-     * @param Node[] $nodes Array of Nodes to be printed
-     *
-     * @return string Comma separated pretty printed nodes
-     */
-    public function pCommaSeparated(array $nodes);
-
-    /**
-     * Signals the pretty printer that a string shall not be indented.
-     *
-     * @param string $string Not to be indented string
-     *
-     * @return string String marked with $this->noIndentToken's.
-     */
-    public function pNoIndent($string);
-
-    /**
-     * Prints reformatted text of the passed comments.
-     *
-     * @param Comment[] $comments List of comments
-     *
-     * @return string Reformatted text of comments
-     */
-    public function pComments(array $comments);
 
     public function pParam(Node\Param $node);
 

@@ -1,8 +1,8 @@
 <?php
 $aaa=5;
-function foo(){
-
-}
+$foo = function() use($aaa){
+    $aaa++;
+};
 
 class Foo{
     function foo(){

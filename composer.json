@@ -11,13 +11,13 @@
   ],
   "autoload": {
     "psr-4": {
-      "phptojs\\": "lib/PhpToJs"
+      "phptojs\\": "lib/phptojs"
     }
   },
   "require": {
     "nikic/php-parser": "dev-master"
   },
   "require-dev": {
-    "phpunit/phpunit": "4.0.0"
+    "phpunit/phpunit": "5.3.4"
   }
 }

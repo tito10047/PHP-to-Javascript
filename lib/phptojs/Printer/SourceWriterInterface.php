@@ -6,7 +6,7 @@
  * Time: 19:26
  */
 
-namespace PhpToJs\Printer;
+namespace phptojs\Printer;
 
 
 interface SourceWriterInterface {

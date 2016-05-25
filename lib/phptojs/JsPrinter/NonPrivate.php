@@ -6,9 +6,10 @@
  * Time: 19:14
  */
 
-namespace PhpToJs\JsPrinter;
+namespace phptojs\JsPrinter;
 
 
+use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\AssignOp;
@@ -18,7 +19,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar;
 use PhpParser\Node\Scalar\MagicConst;
 use PhpParser\Node\Stmt;
-use PhpToJs\Printer\SourceWriter;
+use phptojs\Printer\SourceWriter;
 
 
 class ClosureHelper{
@@ -210,6 +211,39 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->closureHelper->useVar($node->name);
         $this->print_($node->name);
 
+    }
+
+    /**
+     * @param Node\Param[] $params
+     * @return string
+     * @throws Error
+     */
+    public function pParamDefaultValues(array $params){
+        foreach($params as $node){
+            if (!$node instanceof Node\Param){
+                throw new Error('this is not instanceof Node\Param but '.get_class($node));
+            }
+            if (!$node->default){
+                continue;
+            }
+            $this->writer
+                ->print_("if (typeof %{argX} == 'undefined') %{argX}=",$node->name,$node->name);
+            $this->p($node->default);
+            $this->writer
+                ->println(";");
+        }
+        foreach($params as $node){
+            if (!$node->type){
+                continue;
+            }
+            $this->print_("if (!");
+            if (is_string($node->type)){
+                $this->print_("is%{Type}(%{argX})",ucfirst($node->type),$node->name);
+            }else{
+                $this->print_("%{argX} instanceof %{Class}",$node->name,$node->type);
+            }
+            $this->println(") throw new Error('bad param type');");
+        }
     }
 
     public function pArg(Node\Arg $node) {//TODO: implement this
@@ -714,156 +748,564 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->pObjectProperty($node->name);
     }
 
-    public function pExpr_ShellExec(Expr\ShellExec $node) {
-        // TODO: Implement pExpr_ShellExec() method.
+    public function pExpr_ShellExec(Expr\ShellExec $node) {//TODO: implement this
+        self::notImplemented(true,"shell exec",true);
     }
 
-    public function pExpr_Closure(Expr\Closure $node) {
-        // TODO: Implement pExpr_Closure() method.
+    private $useByRef=null;
+    private $useByRedStack=array();
+
+    protected function printUseByRefDef(){
+        if ($this->useByRef!==null){
+            $useByRef = $this->useByRef;
+            $this->useByRef=null;
+            $this->println($useByRef);
+        }
     }
 
-    public function pExpr_ClosureUse(Expr\ClosureUse $node) {
-        // TODO: Implement pExpr_ClosureUse() method.
+
+    public function pExpr_Closure(Expr\Closure $node) {//TODO: implement this
+        self::notImplemented($node->byRef,"closure reference by &");
+        if ($node->static){
+            self::WTF();
+            $this->print_('static');
+        }
+        $this->closureHelper->pushVarScope();
+        $useByRef = array();
+        if (!empty($node->uses)){
+            $useByRef2=array();
+            foreach($node->uses as $use){
+                $this->closureHelper->useVar($use->var);
+                if (!$use->byRef){
+                    $useByRef2[]=$use->var.'_='.$use->var;
+                    $useByRef[]=$use->var.'='.$use->var.'_';
+                }
+            }
+            if (count($useByRef2)){
+                $this->useByRedStack[] = 'var '.join(',',$useByRef2).';';
+            }
+        }
+
+        $this->print_('function(');
+        $this->closureHelper->isDefScope(true);
+        $this->pCommaSeparated($node->params);
+        $this->closureHelper->isDefScope(false);
+        $this->print_(")");
+        $this->println("{")
+            ->indent();
+        if (count($useByRef)){
+            $this->println('var '.join(',',$useByRef).';');
+        }
+
+        $this->pushDelay(true);
+        $this->pStmts($node->stmts);
+        $this->popDelayToVar($body);
+
+        $this->printVarDef();
+        $this->print_($body);
+
+        $this->outdent()
+            ->println("}");
+        if ($this->useByRef!==null){
+            throw new \Exception('method printUseByRefDef must be used!!');
+        }
+        if (count($useByRef)) {
+            $this->useByRef = array_pop($this->useByRedStack);
+        }
+        $this->closureHelper->popVarScope();
     }
 
-    public function pExpr_New(Expr\New_ $node) {
-        // TODO: Implement pExpr_New() method.
+    public function pExpr_ClosureUse(Expr\ClosureUse $node) {//TODO: implement this
+        throw new \Exception('What you doing here??');
     }
 
-    public function pExpr_Clone(Expr\Clone_ $node) {
-        // TODO: Implement pExpr_Clone() method.
+    public function pExpr_New(Expr\New_ $node) {//TODO: implement this
+        $this->print_("new ");
+        $this->p($node->class);
+        $this->print_('(');
+        $this->pCommaSeparated($node->args);
+        $this->print_(')');
     }
 
-    public function pExpr_Ternary(Expr\Ternary $node) {
-        // TODO: Implement pExpr_Ternary() method.
+    public function pExpr_Clone(Expr\Clone_ $node) {//TODO: implement this
+        self::notImplemented(true,"cloning by clone");
+    }
+
+    public function pExpr_Ternary(Expr\Ternary $node) {//TODO: implement this
+        // a bit of cheating: we treat the ternary as a binary op where the ?...: part is the operator.
+        // this is okay because the part between ? and : never needs parentheses.
+        $this->pushDelay();
+        $this->print_("?");
+        if ($node->if!==null){
+            $this->p($node->if);
+        }
+        $this->print_(":");
+        $this->popDelay($delayId);
+        $this->pInfixOp('Expr_Ternary',$node->cond,$delayId,$node->else);
+        /*$this->pInfixOp('Expr_Ternary',
+            $node->cond, ' ?' . (null !== $node->if ? ' ' . $this->p($node->if) . ' ' : '') . ': ', $node->else
+        );*/
     }
 
     public function pExpr_Exit(Expr\Exit_ $node) {
-        // TODO: Implement pExpr_Exit() method.
+        $this->print_("throw new Exit(");
+        if ($node->expr!==null){
+            $this->p($node->expr);
+        }
+        $this->println(");");
     }
 
-    public function pExpr_Yield(Expr\Yield_ $node) {
-        // TODO: Implement pExpr_Yield() method.
+    public function pExpr_Yield(Expr\Yield_ $node) {//TODO: implement this
+        self::notImplemented(true,"using yield",true);
     }
 
-    public function pStmt_Namespace(Stmt\Namespace_ $node) {
-        // TODO: Implement pStmt_Namespace() method.
+    public function pStmt_Namespace(Stmt\Namespace_ $node) {//TODO: implement this
+        if ($node->name!==null){
+            $this->closureHelper->setNamespace(true);
+            $this->print_("N._INIT_('");
+            $this->p($node->name);
+            $this->println("');")
+                ->println("(function(){");
+            $this->closureHelper->pushVarScope();
+            $this->pStmts($node->stmts);
+            $this->closureHelper->popVarScope();
+            $this->print_("}).call(N.");
+            $this->p($node->name);
+            $this->println(");");
+            $this->closureHelper->setNamespace(false);
+        }else{
+            $this->pStmts($node->stmts);
+        }
     }
 
-    public function pStmt_Use(Stmt\Use_ $node) {
-        // TODO: Implement pStmt_Use() method.
+    public function pStmt_Use(Stmt\Use_ $node) {//TODO: implement this
+        foreach($node->uses as $node) {
+            $this->print_("var %{varName} = N.", $node->alias ? $node->alias : $node->name->getLast());
+            $this->p($node->name);
+            $this->println(";");
+        }
     }
 
-    public function pStmt_GroupUse(Stmt\GroupUse $node) {
-        // TODO: Implement pStmt_GroupUse() method.
+    public function pStmt_GroupUse(Stmt\GroupUse $node) {//TODO:
+        self::notImplemented(true,__METHOD__);
     }
 
-    public function pStmt_UseUse(Stmt\UseUse $node) {
-        // TODO: Implement pStmt_UseUse() method.
+    public function pStmt_UseUse(Stmt\UseUse $node) {//TODO::
+        self::notImplemented(true,__METHOD__);
     }
 
-    public function pUseType($type) {
-        // TODO: Implement pUseType() method.
+    public function pUseType($type) {//TODO:
+        self::notImplemented(true,__METHOD__);
     }
 
     public function pStmt_Interface(Stmt\Interface_ $node) {
-        // TODO: Implement pStmt_Interface() method.
+        $classWrapper = new Stmt\Class_($node->name,
+            array(
+                'type'       => $node->getType(),
+                'name'       => $node->name,
+                'extends'    => null,
+                'implements' => $node->extends,
+                'stmts'      => $node->stmts,
+            ),$node->getAttributes());
+        $this->closureHelper->setNextClassIsInterface();
+
+        $this->pStmt_Class($classWrapper);
     }
 
-    public function pStmt_Class(Stmt\Class_ $node) {
-        // TODO: Implement pStmt_Class() method.
+    public function pStmt_Class(Stmt\Class_ $node) {//TODO: implement this
+        //self::notImplemented($node->extends,'extending class');
+        //self::notImplemented($node->implements,'implementng class');
+        //. (null !== $node->extends ? ' extends ' . $this->p($node->extends) : '')
+        //. (!empty($node->implements) ? ' implements ' . $this->pCommaSeparated($node->implements) : '')
+        //$this->indent();
+        $this->closureHelper->pushClass();
+
+        $this->pushDelay()->indent();
+        $this->println("function %{ClassName}(%{Arguments}){",$node->name,'/*constructor arguments*/')
+            ->indent();
+        if ($node->extends){
+            $this->println("parent.call(this %{Arguments});",'/*constructor arguments*/');
+        }
+        if ($this->closureHelper->classIsInterface()){
+            $this->println('__INTERFACE_NEW__();');
+        }
+        $this->closureHelper->pushVarScope();
+        $this->pStmts($node->stmts);
+        $this->closureHelper->popVarScope();
+        $this->outdent()
+            ->println("}")
+            ->outdent()
+            ->popDelay($classBody);
+        $this->pushDelay()->indent();
+        if ($node->type & Stmt\Class_::MODIFIER_ABSTRACT){
+            $this->println('%{ClassName}.prototype.__isAbstract__=true;',$node->name);
+        }
+        foreach($this->closureHelper->getClassStaticProperties() as $property){/** @var Stmt\PropertyProperty $property */
+            //if ($node->type & Stmt\Class_::MODIFIER_STATIC){ TODO: implement private static property
+            $this->print_("%{ClassName}.",$node->name);
+            $this->p($property);
+            $this->println(";");
+            //}
+        }
+        foreach($this->closureHelper->getClassMethods() as $method){/** @var Stmt\ClassMethod $method */
+            $this->print_("%{ClassName}.%{prototype}",$node->name,$method->type & Stmt\Class_::MODIFIER_STATIC?"":"prototype.");
+            $this->pStmt_ClassMethod($method,true);
+        }
+        foreach($this->closureHelper->getClassConstants() as $consts){
+            /** @var Stmt\ClassConst $consts */
+            foreach($consts as $cons){
+                $this->print_("%{ClassName}.",$node->name);
+                $this->pConst($cons);
+                $this->println(";");
+            }
+
+        }
+        $this->println("return %{ClassName};",$node->name);
+        $this->outdent()
+            ->popDelay($methodsAndOthers);
+        $this
+            ->println("var %{Class} = %{useNamSPC}(function (%{useParent}){",
+                $node->name,
+                $this->closureHelper->isNamespace()?"this.{$node->name} = ":'',
+                $node->extends?'parent':'');
+        if ($node->extends || $node->implements){
+            $this->indent()
+                ->print_("__extends(%{ClassName}, %{parent}",$node->name,$node->extends?'parent':'null');
+            if ($node->implements){
+                $this->print_(',arguments[1]');
+            }
+            $this->println(');')
+                ->outdent();
+        }
+        $this->writeDelay($classBody);
+        $this->writeDelay($methodsAndOthers);
+
+        $this->print_("})(");
+        if ($node->extends || $node->implements){
+            $this->print_("%{extend}",$node->extends?$node->extends:'null');
+            if ($node->implements){
+                $this->print_(',[');
+                $this->pCommaSeparated($node->implements);
+                $this->print_("]");
+            }
+        }
+        $this->println(");");
+
+        $this->closureHelper->popClass();
+        //$this->outdent();
     }
 
-    public function pStmt_Trait(Stmt\Trait_ $node) {
-        // TODO: Implement pStmt_Trait() method.
+    public function pStmt_Trait(Stmt\Trait_ $node) {//TODO: implement this
+        self::notImplemented(true,"tait",true);
     }
 
-    public function pStmt_TraitUse(Stmt\TraitUse $node) {
-        // TODO: Implement pStmt_TraitUse() method.
+    public function pStmt_TraitUse(Stmt\TraitUse $node) {//TODO: implement this
+        self::notImplemented(true,"use tait",true);
     }
 
-    public function pStmt_TraitUseAdaptation_Precedence(Stmt\TraitUseAdaptation\Precedence $node) {
-        // TODO: Implement pStmt_TraitUseAdaptation_Precedence() method.
+    public function pStmt_TraitUseAdaptation_Precedence(Stmt\TraitUseAdaptation\Precedence $node) {//TODO: implement this
+        self::notImplemented(true,"pStmt_TraitUseAdaptation_Precedence",true);
     }
 
-    public function pStmt_TraitUseAdaptation_Alias(Stmt\TraitUseAdaptation\Alias $node) {
-        // TODO: Implement pStmt_TraitUseAdaptation_Alias() method.
+    public function pStmt_TraitUseAdaptation_Alias(Stmt\TraitUseAdaptation\Alias $node) {//TODO: implement this
+        self::notImplemented(true,"pStmt_TraitUseAdaptation_Alias",true);
     }
 
-    public function pStmt_Property(Stmt\Property $node) {
-        // TODO: Implement pStmt_Property() method.
+    public function pStmt_Property(Stmt\Property $node) {//TODO: implement this
+        foreach($node->props as $property){
+            if (!$property->default){
+                $property->default = new \PhpParser\Node\Expr\ConstFetch(new \PhpParser\Node\Name('null',$property->getAttributes()),$property->getAttributes());
+            }
+        }
+        if ($node->type & Stmt\Class_::MODIFIER_STATIC){
+            foreach ($node->props as $prop) {
+                $this->closureHelper->addClassStaticProperty($prop);
+            }
+            return;
+        }
+        self::notImplemented($node->type & Stmt\Class_::MODIFIER_PRIVATE, "private property");
+        foreach($node->props as $property){
+            $this->print_("this.");
+            $this->p($property);
+            $this->println(";");
+        }
     }
 
-    public function pStmt_PropertyProperty(Stmt\PropertyProperty $node) {
-        // TODO: Implement pStmt_PropertyProperty() method.
+    public function pStmt_PropertyProperty(Stmt\PropertyProperty $node) {//TODO: implement this
+        $this->print_($node->name);
+        if ($node->default!==null){
+            $this->print_(" = ");
+            $this->p($node->default);
+        }
     }
 
-    public function pStmt_ClassMethod(Stmt\ClassMethod $node) {
-        // TODO: Implement pStmt_ClassMethod() method.
+    public function pStmt_ClassMethod(Stmt\ClassMethod $node, $force=false) {//TODO: implement this
+        if ($force){
+            $this->closureHelper->pushVarScope();
+
+            self::notImplemented($node->byRef,'method return reference');
+            //return //$this->pModifiers($node->type)
+            $this->print_($node->name);
+            $this->print_(" = function(");
+            $this->pCommaSeparated($node->params);
+            $this->println("){");
+            if ($node->stmts!==null){
+                $this->pParamDefaultValues($node->params);
+
+                $this->pushDelay(true);
+                $this->pStmts($node->stmts);
+                $this->popDelayToVar($body);
+
+                $this->printVarDef();
+                $this->print_($body);
+            }else{
+                if ($this->closureHelper->classIsInterface()){
+                    $this->println("__INTERFACE_FUNC__();");
+                }else if($node->isAbstract()){
+                    $this->println("__ABSTRACT_FUNC__();");
+                }else{
+                    self::WTF('where is body???');
+                }
+            };
+            $this->println("};");
+            $this->closureHelper->popVarScope();
+        }else{
+            $this->closureHelper->addClassMethod($node);
+        }
     }
 
     public function pStmt_ClassConst(Stmt\ClassConst $node) {
-        // TODO: Implement pStmt_ClassConst() method.
+        $this->closureHelper->addClassConstants($node);
     }
 
     public function pStmt_Function(Stmt\Function_ $node) {
-        // TODO: Implement pStmt_Function() method.
+        $this->closureHelper->pushVarScope();
+        self::notImplemented($node->byRef,"function return reference by function &$node->name(...");
+        if ($this->closureHelper->isNamespace()){
+            $this->println("var %{name} = this.%{name} = function(",$node->name,$node->name);
+        }else{
+            $this->print_("function %{name}(",$node->name);
+        }
+        $this->pCommaSeparated($node->params);
+        $this->println("){")
+            ->indent();
+        //TODO: where is use keyword???
+        $this->pParamDefaultValues($node->params);
+
+        $this->pushDelay(true);
+        $this->pStmts($node->stmts);
+        $this->popDelayToVar($body);
+
+        $this->printVarDef();
+        $this->print_($body);
+        $this->outdent()
+            ->println('}');
+        $this->closureHelper->popVarScope();
     }
 
     public function pStmt_Const(Stmt\Const_ $node) {
-        // TODO: Implement pStmt_Const() method.
+        if ($this->closureHelper->isNamespace()){
+            foreach($node->consts as $const){
+                $this->print_("var %{varName} = ",$const->name);
+                $this->p($const->value);
+                $this->println(";this.%{varName}=%{varName};",$const->name,$const->name);
+            }
+        }else{
+            foreach($node->consts as $const){
+                $this->print_("window.%{varName} = ",$const->name);
+                $this->p($const->value);
+                $this->println(";");
+            }
+        }
     }
 
     public function pStmt_Declare(Stmt\Declare_ $node) {
-        // TODO: Implement pStmt_Declare() method.
+        self::notImplemented(true,"declare()",true);
     }
 
     public function pStmt_DeclareDeclare(Stmt\DeclareDeclare $node) {
-        // TODO: Implement pStmt_DeclareDeclare() method.
+        self::notImplemented(true,"declare()",true);
     }
 
     public function pStmt_If(Stmt\If_ $node) {
-        // TODO: Implement pStmt_If() method.
+        $this->print_("if (");
+        $this->p($node->cond);
+        $this->println("){")
+            ->indent();
+        $this->pStmts($node->stmts);
+        $this->outdent()
+            ->print_("}");
+        $this->pImplode($node->elseifs);
+        if ($node->else!==null){
+            $this->p($node->else);
+        }else{
+            $this->println();
+        }
     }
 
     public function pStmt_ElseIf(Stmt\ElseIf_ $node) {
-        // TODO: Implement pStmt_ElseIf() method.
+        $this->print_("else if(");
+        $this->p($node->cond);
+        $this->println("){")
+            ->indent();
+        $this->pStmts($node->stmts);
+        $this->outdent()
+            ->println("}");
     }
 
     public function pStmt_Else(Stmt\Else_ $node) {
-        // TODO: Implement pStmt_Else() method.
+        $this->println("else{");
+        $this->pStmts($node->stmts);
+        $this->println("}");
     }
 
     public function pStmt_For(Stmt\For_ $node) {
-        // TODO: Implement pStmt_For() method.
+        $this->pushDelay();
+        $this->indent();
+        $this->pStmts($node->stmts);
+        $this->outdent();
+        $this->popDelayToVar($loopBody);
+
+        $this->print_("for(");
+        $this->pCommaSeparated($node->init);
+        $this->print_("; ");
+        $this->pCommaSeparated($node->cond);
+        $this->print_("; ");
+        $this->pCommaSeparated($node->loop);
+        $this->println("){")
+            ->print_($loopBody)
+            ->println("}");
     }
 
     public function pStmt_Foreach(Stmt\Foreach_ $node) {
-        // TODO: Implement pStmt_Foreach() method.
+        self::notImplemented($node->byRef,"reference by & in foreach value");
+
+        $this->pushDelay();     //expression
+        $this->p($node->expr);
+        $this->popDelayToVar($expression);
+
+        if ($node->keyVar) {    //key name
+            $this->pushDelay();
+            $this->p($node->keyVar);
+            $this->popDelayToVar($keyName);
+        }else{
+            $keyName = "_key_";
+        }
+        $this->pushDelay();     //value name
+        $this->p($node->valueVar);
+        $this->popDelayToVar($varName);
+
+        $this->pushLoop(true);
+//TODO: $this->pStmts($node->cases);
+        $this->popLoopPrintName($loopBody);
+
+        $this->println("for (%{key} in %{expr}){",$keyName,$expression)
+            ->indent()
+            ->println("%{varName} = %{expr}[%{key}]",$varName,$expression,$keyName)
+            ->print_($loopBody)
+            ->outdent();
     }
 
     public function pStmt_While(Stmt\While_ $node) {
-        // TODO: Implement pStmt_While() method.
+        $this->pushLoop(true);
+//TODO: $this->pStmts($node->cases);
+        $this->popLoopPrintName($loopBody);
+
+        $this->pushDelay();
+        $this->p($node->cond);
+        $this->popDelayToVar($cond);
+
+        $this->println("while(%{cond}){",$cond)
+            ->indent()
+            ->print_($loopBody)
+            ->outdent()
+            ->println("}");
     }
 
     public function pStmt_Do(Stmt\Do_ $node) {
-        // TODO: Implement pStmt_Do() method.
+        $this->pushLoop(true);
+//TODO: $this->pStmts($node->cases);
+        $this->popLoopPrintName($loopBody);
+
+        $this->pushDelay(false);
+        $this->p($node->cond);
+        $this->popDelayToVar($cond);
+
+        $this->println("do {")
+            ->indent()
+            ->print_($loopBody)
+            ->outdent()
+            ->println("}while (%{cond});",$cond);
     }
 
     public function pStmt_Switch(Stmt\Switch_ $node) {
-        // TODO: Implement pStmt_Switch() method.
+        $this->pushDelay();
+        $this->p($node->cond);
+        $this->popDelayToVar($cond);
+
+        $this->pushLoop(true);
+        $this->pStmts($node->cases);
+        $this->popLoopPrintName($loopBody);
+
+        $this->println("switch (%{cond}){",$cond)
+            ->indent()
+            ->print_($loopBody)
+            ->outdent()
+            ->println("}");
     }
 
     public function pStmt_Case(Stmt\Case_ $node) {
-        // TODO: Implement pStmt_Case() method.
+        if ($node->cond!==null){
+            $this->print_("case ");
+            $this->p($node->cond);
+        }else{
+            $this->print_("default");
+        }
+        $this->println(":")
+            ->indent();
+        $this->pStmts($node->stmts);
+        $this->outdent()
+            ->println();
     }
 
-    public function pStmt_TryCatch(Stmt\TryCatch $node) {
-        // TODO: Implement pStmt_TryCatch() method.
+    public function pStmt_TryCatch(Stmt\TryCatch $node) {//TODO: implement this
+        $this->println("try{")
+            ->indent();
+        $this->pStmts($node->stmts);
+        $this->outdent();
+        $this->println("}catch(__e__){")
+            ->indent();
+
+        $catches = array();
+        foreach($node->catches as $catch){
+            $this->pushDelay();
+            $this->pStmt_Catch($catch);
+            $v=null;
+            $this->popDelayToVar($v);
+            $catches[]=$v;
+        }
+        $this->print_(join('else',$catches));
+        $this->outdent();
+        if ($node->finallyStmts!==null){
+            $this->println("}finally{")
+                ->indent();
+            $this->pStmts($node->finallyStmts);
+            $this->outdent();
+
+        }
+        $this->println("}");
     }
 
     public function pStmt_Catch(Stmt\Catch_ $node) {
-        // TODO: Implement pStmt_Catch() method.
+        $this->pushDelay(false);
+        $this->p($node->type);
+        $this->popDelayToVar($type);
+        $this->println("if (__e__ instanceof %{type}){",$type)
+            ->indent()
+            ->println("var %{varName}=__e__;",$node->var);
+        $this->pStmts($node->stmts);
+        $this->outdent()
+            ->println("}");
     }
 
     public function pStmt_Break(Stmt\Break_ $node) {
@@ -871,83 +1313,114 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Continue(Stmt\Continue_ $node) {
-        // TODO: Implement pStmt_Continue() method.
+        $name='';
+        if ($node->num !== null){
+            $name = ' '.$this->closureHelper->getLoopName($node->num);//TODO
+        }
+        $this->println('break %{name};',$name);
     }
 
     public function pStmt_Return(Stmt\Return_ $node) {
-        // TODO: Implement pStmt_Return() method.
+        $this->print_("return ");
+        if ($node->expr!==null){
+            $this->p($node->expr);
+        }
+        $this->println(";");
     }
 
     public function pStmt_Throw(Stmt\Throw_ $node) {
-        // TODO: Implement pStmt_Throw() method.
+        $this->print_("throw ");
+        $this->p($node->expr);
+        $this->println(";");
     }
 
-    public function pStmt_Label(Stmt\Label $node) {
-        // TODO: Implement pStmt_Label() method.
+    public function pStmt_Label(Stmt\Label $node) {//TODO: implement this
+        self::notImplemented(true,"labels:");
     }
 
-    public function pStmt_Goto(Stmt\Goto_ $node) {
-        // TODO: Implement pStmt_Goto() method.
+    public function pStmt_Goto(Stmt\Goto_ $node) {//TODO: implement this
+        self::notImplemented(true,'goto.',true);
+        //TODO: implement it. http://stackoverflow.com/questions/9751207/how-can-i-use-goto-in-javascript/23181432#23181432
     }
 
     public function pStmt_Echo(Stmt\Echo_ $node) {
-        // TODO: Implement pStmt_Echo() method.
+        return 'document.write(' . $this->pCommaSeparated($node->exprs) . ');';
     }
 
-    public function pStmt_Static(Stmt\Static_ $node) {
-        // TODO: Implement pStmt_Static() method.
+    public function pStmt_Static(Stmt\Static_ $node) {//TODO: implement this
+        self::notImplemented(true," static variables",true);
     }
 
-    public function pStmt_Global(Stmt\Global_ $node) {
-        // TODO: Implement pStmt_Global() method.
+    public function pStmt_Global(Stmt\Global_ $node) {//TODO: implement this
+        self::notImplemented(true," global variables",true);
     }
 
-    public function pStmt_StaticVar(Stmt\StaticVar $node) {
-        // TODO: Implement pStmt_StaticVar() method.
+    public function pStmt_StaticVar(Stmt\StaticVar $node) {//TODO: implement this
+        self::notImplemented(true,'static vars',true);
     }
 
-    public function pStmt_Unset(Stmt\Unset_ $node) {
-        // TODO: Implement pStmt_Unset() method.
+    public function pStmt_Unset(Stmt\Unset_ $node) {//TODO: implement this
+        $this->print_("delete ");
+        $this->pCommaSeparated($node->vars);
+        $this->println(";");
     }
 
-    public function pStmt_InlineHTML(Stmt\InlineHTML $node) {
-        // TODO: Implement pStmt_InlineHTML() method.
+    public function pStmt_InlineHTML(Stmt\InlineHTML $node) {//TODO: implement this
+        $this->p($node->value);
+        //return JS_SCRIPT_END . $this->pNoIndent("\n" . $node->value) . JS_SCRIPT_BEGIN;
     }
 
-    public function pStmt_HaltCompiler(Stmt\HaltCompiler $node) {
-        // TODO: Implement pStmt_HaltCompiler() method.
+    public function pStmt_HaltCompiler(Stmt\HaltCompiler $node) {//TODO: implement this
+        self::notImplemented(true," __halt_compiler()",true);
     }
 
     public function pStmt_Nop(Stmt\Nop $node) {
         // TODO: Implement pStmt_Nop() method.
+        self::notImplemented(true,__METHOD__);
     }
 
     public function pType($node) {
         // TODO: Implement pType() method.
+        self::notImplemented(true,__METHOD__);
     }
 
     public function pClassCommon(Stmt\Class_ $node, $afterClassToken) {
         // TODO: Implement pClassCommon() method.
+        self::notImplemented(true,__METHOD__);
     }
 
-    public function pObjectProperty($node) {
-        // TODO: Implement pObjectProperty() method.
+    public function pObjectProperty($node) {//TODO: implement this
+        if ($node instanceof Expr) {
+            $this->print_("[");
+            $this->p($node);
+            $this->print_("]");
+        } else {
+            $this->print_($node);
+        }
     }
 
-    public function pModifiers($modifiers) {
-        // TODO: Implement pModifiers() method.
+    public function pModifiers($modifiers) {//TODO: implement this
+        /*return ($modifiers & Stmt\Class_::MODIFIER_PUBLIC    ? 'public '    : '')
+        . ($modifiers & Stmt\Class_::MODIFIER_PROTECTED ? 'protected ' : '')
+        . ($modifiers & Stmt\Class_::MODIFIER_PRIVATE   ? 'private '   : '')
+        . ($modifiers & Stmt\Class_::MODIFIER_STATIC    ? 'static '    : '')
+        . ($modifiers & Stmt\Class_::MODIFIER_ABSTRACT  ? 'abstract '  : '')
+        . ($modifiers & Stmt\Class_::MODIFIER_FINAL     ? 'final '     : '');*/
     }
 
     public function pEncapsList(array $encapsList, $quote) {
         // TODO: Implement pEncapsList() method.
+        self::notImplemented(true,__METHOD__);
     }
 
     public function pDereferenceLhs(Node $node) {
         // TODO: Implement pDereferenceLhs() method.
+        self::notImplemented(true,__METHOD__);
     }
 
     public function pCallLhs(Node $node) {
         // TODO: Implement pCallLhs() method.
+        self::notImplemented(true,__METHOD__);
     }
 
 

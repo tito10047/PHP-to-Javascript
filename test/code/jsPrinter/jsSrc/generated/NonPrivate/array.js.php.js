@@ -31,9 +31,9 @@ keys = {
 	5: 'bKey',
 	6: 'aKey'
 };
+var i;
 for (i = 0; a.valid(); i++, a.next()) {
 	if (i > 100) {
-		var i;
 		throw new Exception('out of range');
 	}
 	var val;

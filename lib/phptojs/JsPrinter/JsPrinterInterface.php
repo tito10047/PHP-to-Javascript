@@ -284,7 +284,7 @@ interface JsPrinterInterface {
 
     public function pStmt_TryCatch(Stmt\TryCatch $node);
 
-    public function pStmt_Catch(Stmt\Catch_ $node);
+    public function pStmt_Catch(Stmt\Catch_ $node, &$catchesVars);
 
     public function pStmt_Break(Stmt\Break_ $node);
 

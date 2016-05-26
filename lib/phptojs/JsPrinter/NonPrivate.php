@@ -499,15 +499,15 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_BinaryOp_LogicalAnd(BinaryOp\LogicalAnd $node) {
-        $this->pInfixOp('Expr_BinaryOp_LogicalAnd', $node->left, ' and ', $node->right);
+        $this->pInfixOp('Expr_BinaryOp_LogicalAnd', $node->left, ' && ', $node->right);
     }
 
     public function pExpr_BinaryOp_LogicalOr(BinaryOp\LogicalOr $node) {
-        $this->pInfixOp('Expr_BinaryOp_LogicalOr', $node->left, ' or ', $node->right);
+        $this->pInfixOp('Expr_BinaryOp_LogicalOr', $node->left, ' || ', $node->right);
     }
 
     public function pExpr_BinaryOp_LogicalXor(BinaryOp\LogicalXor $node) {//TODO: implement this
-        $this->pInfixOp('Expr_BinaryOp_LogicalXor', $node->left, ' xor ', $node->right);
+        $this->pInfixOp('Expr_BinaryOp_LogicalXor', $node->left, ' ^ ', $node->right);
     }
 
     public function pExpr_BinaryOp_Equal(BinaryOp\Equal $node) {
@@ -610,7 +610,9 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     // Casts
 
     public function pExpr_Cast_Int(Cast\Int_ $node) {
-        $this->print_("parseInt(".$this->p($node->expr).")");
+        $this->print_("parseInt(");
+		$this->p($node->expr);
+		$this->print_(")");
     }
 
     public function pExpr_Cast_Double(Cast\Double $node) {
@@ -1200,19 +1202,31 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_For(Stmt\For_ $node) {
+
+		$this->pushDelay();
+		$this->print_("for(");
+		$this->pCommaSeparated($node->init);
+		$this->print_("; ");
+		$this->pCommaSeparated($node->cond);
+		$this->print_("; ");
+		$this->pCommaSeparated($node->loop);
+		$this->print_(")");
+		$this->popDelayToVar($statement);
+
+		$this->pushDelay();
+		$this->printVarDef();
+		$this->popDelayToVar($vars);
+
+
         $this->pushDelay();
         $this->indent();
         $this->pStmts($node->stmts);
         $this->outdent();
         $this->popDelayToVar($loopBody);
 
-        $this->print_("for(");
-        $this->pCommaSeparated($node->init);
-        $this->print_("; ");
-        $this->pCommaSeparated($node->cond);
-        $this->print_("; ");
-        $this->pCommaSeparated($node->loop);
-        $this->println("){")
+		$this->print_($vars)
+			->print_($statement)
+        	->println("{")
             ->print_($loopBody)
             ->println("}");
     }
@@ -1317,13 +1331,15 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             ->indent();
 
         $catches = array();
+		$catchesVars = array();
         foreach($node->catches as $catch){
             $this->pushDelay();
-            $this->pStmt_Catch($catch);
+            $this->pStmt_Catch($catch,$catchesVars);
             $v=null;
             $this->popDelayToVar($v);
             $catches[]=$v;
         }
+		$this->println("var %{vars};",join(", ",array_unique($catchesVars)));
         $this->print_(join('else',$catches));
         $this->outdent();
         if ($node->finallyStmts!==null){
@@ -1336,16 +1352,18 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->println("}");
     }
 
-    public function pStmt_Catch(Stmt\Catch_ $node) {
+    public function pStmt_Catch(Stmt\Catch_ $node, &$catchesVars) {
         $this->pushDelay(false);
         $this->p($node->type);
         $this->popDelayToVar($type);
         $this->println("if (__e__ instanceof %{type}){",$type)
             ->indent()
-            ->println("var %{varName}=__e__;",$node->var);
+            ->println("%{varName}=__e__;",$node->var);
         $this->pStmts($node->stmts);
         $this->outdent()
             ->println("}");
+
+		$catchesVars[]=$node->var;
     }
 
     public function pStmt_Break(Stmt\Break_ $node) {

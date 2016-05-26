@@ -33,11 +33,12 @@ var GooException_ = (function(parent) {
 try {
 	throw new GooException_();
 } catch (__e__) {
+	var e;
 	if (__e__ instanceof GooException_) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, true, 'GooException');
 	} else if (__e__ instanceof Exception) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, false, 'GooException');
 	}
 }
@@ -48,14 +49,15 @@ Foo2Exception = false;
 try {
 	throw new Foo2Exception_();
 } catch (__e__) {
+	var e;
 	if (__e__ instanceof Foo2Exception_) {
-		var e = __e__;
+		e = __e__;
 		Foo2Exception = true;
 	} else if (__e__ instanceof FooException_) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, false, 'Foo2Exception');
 	} else if (__e__ instanceof Exception) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, false, 'Foo2Exception');
 	}
 } finally {
@@ -68,14 +70,15 @@ FooException = false;
 try {
 	throw new FooException_();
 } catch (__e__) {
+	var e;
 	if (__e__ instanceof Foo2Exception_) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, false, 'FooException');
 	} else if (__e__ instanceof FooException_) {
-		var e = __e__;
+		e = __e__;
 		FooException = true;
 	} else if (__e__ instanceof Exception) {
-		var e = __e__;
+		e = __e__;
 		assert_(true, false, 'FooException');
 	}
 }

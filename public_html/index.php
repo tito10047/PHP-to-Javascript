@@ -17,6 +17,7 @@ setcookie("converter",true);
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
     <script src="beautify.js"></script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
     <style>
@@ -86,6 +87,7 @@ setcookie("converter",true);
     </div>
     <form enctype="application/x-www-form-urlencoded"></form>
     <script type="text/javascript">
+        var jsCode="";
         window.addEventListener("load", function load(event){
             var phpCode=document.getElementById("phpCode").value;
             document.getElementById("phpCodeColoredPre").innerHTML=phpCode.replaceAll("<","&lt;");
@@ -156,6 +158,7 @@ setcookie("converter",true);
                         }else{
                             document.getElementById("jsCode").className="";
                         }
+                        jsCode=code;
                         document.getElementById("jsCode").innerHTML=js_beautify(code,{
                             "indent-char":"\\t",
                             "preserve-newlines":true,
@@ -191,7 +194,7 @@ setcookie("converter",true);
             convert();
         });
         document.getElementById("runButton").addEventListener("click",function (event) {
-            eval(document.getElementById("jsCode").value);
+            eval(jsCode);
         });
         document.getElementById("phpCodeColoredPre").addEventListener("click",function (event) {
             document.getElementById("phpCodeColoredPre").className="hidden";

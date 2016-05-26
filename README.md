@@ -25,6 +25,15 @@
 - declare(ticks)
 - yield
 
+#### Usage####
+
+    $parser        = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
+    $prettyPrinter = new \phptojs\JsPrinter\NonPrivate();
+
+    $phpCode = file_get_contents('path/to/phpCode');
+    $stmts = $parser->parse($phpCode);
+    $jsCode $prettyPrinter->jsPrint($stmts);
+
 Example
 ===================
 

@@ -242,7 +242,7 @@ class ClosureHelper{
     public function popLoop(&$loopName) {
     }
 
-    public function getLoopName(Scalar\DNumber $num) {
+    public function getLoopName($num) {
     }
 
 
@@ -344,6 +344,14 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     public function pName(Name $node) {
         if (count($node->parts)==1 && $node->parts[0]=='parent'){
             $this->print_('parent.prototype');
+            return;
+        }
+        if (count($node->parts)==1 && $node->parts[0]=="FALSE"){
+            $this->print_("false");
+            return;
+        }
+        if (count($node->parts)==1 && $node->parts[0]=="TRUE"){
+            $this->print_("true");
             return;
         }
         $this->print_(implode('.', $node->parts));
@@ -1267,7 +1275,9 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Echo(Stmt\Echo_ $node) {
-        return 'document.write(' . $this->pCommaSeparated($node->exprs) . ');';
+        $this->print_('console.log(');
+        $this->pCommaSeparated($node->exprs);
+        $this->print_(');');
     }
 
     public function pStmt_Static(Stmt\Static_ $node) {//TODO: implement this

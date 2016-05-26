@@ -158,6 +158,7 @@ setcookie("converter",true);
                         }else{
                             document.getElementById("jsCode").className="";
                         }
+                        code = code.replaceAll("__ART__","alert");
                         jsCode=code;
                         document.getElementById("jsCode").innerHTML=js_beautify(code,{
                             "indent-char":"\\t",
@@ -182,7 +183,7 @@ setcookie("converter",true);
 
             xmlhttp.open("POST", "/convert.php", true);
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send("code="+encodeURI(code).replaceAll("&","__AND__").replaceAll("\\+","__PLUS__"));
+            xmlhttp.send("code="+encodeURI(code).replaceAll("&","__AND__").replaceAll("\\+","__PLUS__").replaceAll("alert","__ART__"));
         }
         document.getElementById("templates").addEventListener("change",function (event) {
             if (!event.target.value){

@@ -44,6 +44,7 @@ namespace PhpTpJs {
             $this->phpGlobalFiles = self::getFiles($this->PATH_SRC_PHP . 'global', "js.php");
             JsPrinterAbstract::$showWarnings = false;
             JsPrinterAbstract::$throwErrors = false;
+            JsPrinterAbstract::$enableVariadic = true;
         }
 
         /**
@@ -112,7 +113,7 @@ namespace PhpTpJs {
 
         protected function runJsTest($filePath) {
             $filePath = realpath($filePath);
-            exec("nodejs {$this->PATH_TO_JS_TEST} '{$filePath}'", $output, $returnCode);
+            exec("/opt/node-v6.2.0/bin/node {$this->PATH_TO_JS_TEST} '{$filePath}'", $output, $returnCode);
             if ($returnCode != false) {
                 echo "================" . PHP_EOL;
                 var_dump($output);

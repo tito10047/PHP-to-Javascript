@@ -267,8 +267,10 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pParam(Node\Param $node) {
         self::notImplemented($node->byRef,"reference param {$node->name} by & ");
-        self::notImplemented($node->variadic,"variadic param {$node->name} by ... ");
         $this->closureHelper->useVar($node->name);
+        if ($node->variadic && JsPrinterAbstract::$enableVariadic){
+            $this->print_("...");       
+        }
         $this->print_($node->name);
 
     }
@@ -292,17 +294,37 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             $this->writer
                 ->println(";");
         }
-        foreach($params as $node){
+        foreach($params as $paramPos=>$node){
             if (!$node->type){
                 continue;
+            }
+            if ($node->variadic){
+                $this->println("for(var __paraPos={$paramPos};__paraPos<arguments.length;__paraPos++){");
+                $this->indent();
             }
             $this->print_("if (!");
             if (is_string($node->type)){
                 $this->print_("is%{Type}(%{argX})",ucfirst($node->type),$node->name);
             }else{
-                $this->print_("%{argX} instanceof %{Class}",$node->name,$node->type);
+                $classParts=explode("\\",$node->type);
+                if (count($classParts)>1){
+                    $className="N.".join(".",$classParts);
+                }else{
+                    $className=$node->type;
+                }
+                if ($node->variadic){
+                    $this->print_("%{argX}","arguments[__paraPos]");
+                }else{
+                    $this->print_("%{argX}",$node->name);
+                }
+                $this->print_(" instanceof %{Class}",$className);
             }
             $this->println(") throw new Error('bad param type');");
+
+            if ($node->variadic){
+                $this->outdent();
+                $this->println("}");
+            }
         }
     }
 
@@ -1267,7 +1289,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_InlineHTML(Stmt\InlineHTML $node) {//TODO: implement this
-        $this->p($node->value);
+        self::notImplemented(true,"InlineHTML",true);
         //return JS_SCRIPT_END . $this->pNoIndent("\n" . $node->value) . JS_SCRIPT_BEGIN;
     }
 

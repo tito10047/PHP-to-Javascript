@@ -26,7 +26,7 @@ use PhpParser\Node\Scalar\MagicConst;
 use PhpParser\Node\Stmt;
 
 abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
-
+    public static $enableVariadic=false;
     /** @var SourceWriter */
     protected $writer;
 

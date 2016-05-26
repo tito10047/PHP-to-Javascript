@@ -1,4 +1,6 @@
-###Fork for create php to js converter. Work in progress.###
+### PHP to JavaScript convertor###
+===============
+#### [Online Convertor](http://phptojs.mostka.com/)####
 ===============
 
 ####Suports####

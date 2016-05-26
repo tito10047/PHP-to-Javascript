@@ -9,6 +9,7 @@
 - Exceptions and catch
 - continue<num> ,break<num>
 - anonymous classes
+- magic constants
 
 ####Planed####
 - include and require

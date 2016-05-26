@@ -39,8 +39,11 @@ class ClosureHelper{
     }
 
     private $isNamespace=false;
-    public function setNamespace($is){
+    /** @var Node\Name  */
+    private $namespace;
+    public function setNamespace($is, $namespace){
         $this->isNamespace=$is;
+        $this->namespace = $namespace;
     }
     public function isNamespace(){
         return $this->isNamespace;
@@ -62,13 +65,20 @@ class ClosureHelper{
     private $classIsInterface = false;
     private $nextClassIsInterface = false;
     private $classStack = array();
-    public function pushClass(){
+    private $currentClassName = "";
+    private $currentMethodName = "";
+    private $currentFunctionName = "";
+    public function pushClass($className){
+
         $this->classStack[]=array(
             0=>$this->classConstants,
             1=>$this->classMethods,
             2=>$this->classConstructor,
             3=>$this->classStaticProperties,
-            4=>$this->classIsInterface
+            4=>$this->classIsInterface,
+            5=>$this->currentClassName,
+            6=>$this->currentMethodName,
+            7=>$this->currentFunctionName
         );
         $this->classConstants           = array();
         $this->classMethods             = array();
@@ -76,6 +86,9 @@ class ClosureHelper{
         $this->classStaticProperties    = array();
         $this->classIsInterface         = $this->nextClassIsInterface;
         $this->nextClassIsInterface=false;
+        $this->currentClassName=$className;
+        $this->currentMethodName="";
+        $this->currentFunctionName="";
     }
 
     public function popClass(){
@@ -85,6 +98,9 @@ class ClosureHelper{
         $this->classConstructor         = $data[2];
         $this->classStaticProperties    = $data[3];
         $this->classIsInterface         = $data[4];
+        $this->currentClassName         = $data[5];
+        $this->currentMethodName        = $data[6];
+        $this->currentFunctionName      = $data[7];
     }
 
     /** @return Stmt\ClassConst[] */
@@ -114,6 +130,49 @@ class ClosureHelper{
         $this->classIsInterface = $isInterface;}
     public function setNextClassIsInterface(){
         $this->nextClassIsInterface=true;
+    }
+    public function getClassName(){
+        $className="";
+        if ($this->isNamespace){
+            $className.= $this->getNamespaceName();
+            $className.="\\\\";
+        }
+        $className.=$this->currentClassName;
+        return $className;
+    }
+    public function getNamespaceName(){
+        $name="";
+        if ($this->isNamespace){
+            $name.=join("\\\\", $this->namespace->parts);
+        }
+        return $name;
+    }
+    public function getMethodName(){
+        $methodName="";
+        if ($this->isNamespace){
+            $methodName.= $this->getNamespaceName();
+            $methodName.="\\\\";
+        }
+        $methodName.=$this->currentClassName;
+        $methodName.="::";
+        $methodName.=$this->currentMethodName;
+        return $methodName;
+    }
+    public function getFunctionName(){
+
+        $functionName="";
+        if ($this->isNamespace){
+            $functionName.= $this->getNamespaceName();
+            $functionName.="\\\\";
+        }
+        $functionName.=$this->currentFunctionName;
+        return $functionName;
+    }
+    public function setMethodName($name){
+        $this->currentMethodName=$name;
+    }
+    public function setFunctionName($name){
+        $this->currentFunctionName=$name;
     }
     /** @param Stmt\ClassMethod $classMethod */
     public function addClassMethod(Stmt\ClassMethod $classMethod){
@@ -185,6 +244,7 @@ class ClosureHelper{
 
     public function getLoopName(Scalar\DNumber $num) {
     }
+
 
 }
 
@@ -279,8 +339,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     // Magic Constants
 
     public function pScalar_MagicConst_Class(MagicConst\Class_ $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
-        return '__CLASS__';
+        $this->print_("'{$this->closureHelper->getClassName()}'");
     }
 
     public function pScalar_MagicConst_Dir(MagicConst\Dir $node) {//TODO: implement this
@@ -294,8 +353,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_MagicConst_Function(MagicConst\Function_ $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
-        return '__FUNCTION__';
+        $this->print_("'{$this->closureHelper->getFunctionName()}'");
     }
 
     public function pScalar_MagicConst_Line(MagicConst\Line $node) {//TODO: implement this
@@ -304,13 +362,11 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_MagicConst_Method(MagicConst\Method $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
-        return '__METHOD__';
+        $this->print_("'{$this->closureHelper->getMethodName()}'");
     }
 
     public function pScalar_MagicConst_Namespace(MagicConst\Namespace_ $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
-        return '__NAMESPACE__';
+        $this->print_("'{$this->closureHelper->getNamespaceName()}'");
     }
 
     public function pScalar_MagicConst_Trait(MagicConst\Trait_ $node) {//TODO: implement this
@@ -637,7 +693,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pStmt_Namespace(Stmt\Namespace_ $node) {//TODO: implement this
         if ($node->name!==null){
-            $this->closureHelper->setNamespace(true);
+            $this->closureHelper->setNamespace(true,$node->name);
             $this->print_("N._INIT_('");
             $this->p($node->name);
             $this->println("');")
@@ -648,7 +704,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             $this->print_("}).call(N.");
             $this->p($node->name);
             $this->println(");");
-            $this->closureHelper->setNamespace(false);
+            $this->closureHelper->setNamespace(false,null);
         }else{
             $this->pStmts($node->stmts);
         }
@@ -694,13 +750,13 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         //. (null !== $node->extends ? ' extends ' . $this->p($node->extends) : '')
         //. (!empty($node->implements) ? ' implements ' . $this->pCommaSeparated($node->implements) : '')
         //$this->indent();
-        $this->closureHelper->pushClass();
 
         if ($node->name!=null) {
             $className = $node->name;
         }else{
             $className = "__anonymous__";
         }
+        $this->closureHelper->pushClass($className);
 
         $anonymousClassParameters=array();
         if (isset($node->parameters)){
@@ -863,6 +919,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
             self::notImplemented($node->byRef,'method return reference');
             //return //$this->pModifiers($node->type)
+            $this->closureHelper->setMethodName($node->name);
             $this->print_($node->name);
             $this->print_(" = function(");
             $this->pCommaSeparated($node->params);
@@ -899,6 +956,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     public function pStmt_Function(Stmt\Function_ $node) {
         $this->closureHelper->pushVarScope();
         self::notImplemented($node->byRef,"function return reference by function &$node->name(...");
+        $this->closureHelper->setFunctionName($node->name);
         if ($this->closureHelper->isNamespace()){
             $this->println("var %{name} = this.%{name} = function(",$node->name,$node->name);
         }else{
@@ -917,7 +975,11 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->printVarDef();
         $this->print_($body);
         $this->outdent()
-            ->println('}');
+            ->print_('}');
+        if ($this->closureHelper->isNamespace()){
+            $this->print_(";");
+        }
+        $this->println();
         $this->closureHelper->popVarScope();
     }
 

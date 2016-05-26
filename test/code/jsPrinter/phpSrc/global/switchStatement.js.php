@@ -1,28 +1,29 @@
 <?php
 
-function 	testSwitchFunction($name, $value = FALSE){
+function testSwitchFunction($name, $value = FALSE)
+{
 
     $result = FALSE;
 
-    switch($name){
+    switch ($name) {
 
-        case('output'):{
-            $result =  'output';
+        case('output'): {
+            $result = 'output';
             break;
         }
 
-        case('silent'):{
-            $result =  'notloud';
+        case('silent'): {
+            $result = 'notloud';
             break;
         }
 
-        case('custom'):{
+        case('custom'): {
             $result = $value;
             break;
         }
 
-        default:{
-        $result = 'Unknown';
+        default: {
+            $result = 'Unknown';
         }
     }
 

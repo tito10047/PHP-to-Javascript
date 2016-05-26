@@ -1,35 +1,42 @@
 <?php
 
-function	paramTest($object, $otherVar){
-	return $object;
+function paramTest($object, $otherVar)
+{
+    return $object;
 }
 
 
-class TestClass{
+class TestClass
+{
 
-	public $five = 5;
+    public $five = 5;
 
-	function	getThis(){
-		return $this;
-	}
+    function getThis()
+    {
+        return $this;
+    }
 
-	function	getThis2(){
-		return paramTest($this, 'ignored var');
-	}
+    function getThis2()
+    {
+        return paramTest($this, 'ignored var');
+    }
 
-	function	getThis3(){
-		$returnValue = $this;
-		return $returnValue;
-	}
+    function getThis3()
+    {
+        $returnValue = $this;
+        return $returnValue;
+    }
 
-	function	getClassName(){
-		$className = get_class($this);
-		return $className;
-	}
+    function getClassName()
+    {
+        $className = get_class($this);
+        return $className;
+    }
 
-	function	getValue(){
-		return $this->five;
-	}
+    function getValue()
+    {
+        return $this->five;
+    }
 
 
 }

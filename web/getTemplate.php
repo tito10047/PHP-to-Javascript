@@ -11,6 +11,7 @@ if (!isset($_COOKIE["converter"])){
 if (!@$_GET["template"]){
     return;
 }
+header("Content-Type: text/plain");
 $template=$_GET["template"];
 $files=glob(__DIR__."/../test/code/jsPrinter/phpSrc/*/{$template}.js.php");
 if (count($files)==0){

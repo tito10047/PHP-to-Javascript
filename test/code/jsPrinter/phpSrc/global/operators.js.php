@@ -1,21 +1,26 @@
 <?php
 
-$a=0;
-$b=1;
-$c=2;
-class Foo{};
+$a = 0;
+$b = 1;
+$c = 2;
+
+class Foo
+{
+}
+
+;
 ++$a;
 --$a;
 $a++;
 $a--;
 
-(int) $a;
-(integer) $a;
-(float) $a;
-(double) $a;
-(string) $a;
-(bool) $a;
-(boolean) $a;
+(int)$a;
+(integer)$a;
+(float)$a;
+(double)$a;
+(string)$a;
+(bool)$a;
+(boolean)$a;
 
 $a * $b;
 $a / $b;

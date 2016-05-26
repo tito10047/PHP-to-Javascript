@@ -26,7 +26,10 @@ try{
     $errors = ob_get_clean();
     $errors = explode(PHP_EOL,$errors);
     foreach ($errors as $error){
-        echo "//".$error.PHP_EOL;
+        if ($error!="") {
+            echo "//" . $error;
+        }
+        echo PHP_EOL;
     }
     echo $jsCode;
     

@@ -14,30 +14,41 @@ setcookie("converter",true);
     <meta charset="UTF-8">
     <title>Php to Js converter</title>
     <script src="/scripts.php"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+    <script src="beautify.js"></script>
 </head>
 <body>
     <style>
         html, body{
-            height:100%;
         }
         .center {
             margin: auto;
             width: 80%;
             padding: 10px;
-            height:100%;
         }
         table td{
             padding: 20px;
         }
-        textarea.error{
+        .error{
             background-color: #F74E4E;
+        }
+        .hidden{
+            display: none;
+        }
+        pre{
+            margin: 0;
+        }
+        code{
+            background-color: #f0f0f0;
         }
     </style>
     <div class="center">
         <div style="text-align: center;">
             <h1>PHP to JavaScript converter</h1>
+            <h3><a href="https://github.com/tito10047/phptojs" target="_blank">More info</a></h3>
         </div>
-        <table style="width: 100%;height: 90%;">
+        <table style="width: 100%;600px;">
             <tr>
                 <td>
                     <div style="text-align: center;">
@@ -49,18 +60,25 @@ setcookie("converter",true);
                             <?php endforeach;?>
                         </select>
                     </div>
-                    <div style="height: 100%;">
-                        <textarea id="phpCode" style="width: 100%;height: 100%;"></textarea>
+                    <div style="height: 600px;">
+                        <pre style="height: 600px;width: 554px;border: 1px solid #a9a9a9;" id="phpCodeColoredPre"><code id="phpCodeColored" style="width: 100%;height: 100%;border: 1px solid #a9a9a9;display: block;">&lt;?php
+
+</code></pre>
+                        <textarea id="phpCode" style="width: 554px;height: 600px;border: 1px solid #a9a9a9;white-space: pre;" class="hidden">&lt;?php
+
+</textarea>
                     </div>
                 </td>
                 <td style="width: 57px;">
-                    <button id="convertButton">Convert</button><br>
+                    <button id="convertButton">Convert</button><br><br>
                     <button id="runButton">Execute</button>
                 </td>
                 <td>
-                    <div style="text-align: center;">Converted JavaScript code<br><br></div>
-                    <div style="height: 100%;">
-                        <textarea id="jsCode" style="width: 100%;height: 100%;"></textarea>
+                    <div style="text-align: center;">Converted JavaScript code<br></div>
+                    <div style="height: 600px;">
+                        <pre style="height: 600px;">
+                            <code id="jsCode" style="width: 554px;height: 600px;border: 1px solid #a9a9a9;display: block;"></code>
+                        </pre>
                     </div>
                 </td>
             </tr>
@@ -68,6 +86,11 @@ setcookie("converter",true);
     </div>
     <form enctype="application/x-www-form-urlencoded"></form>
     <script type="text/javascript">
+        window.addEventListener("load", function load(event){
+            var phpCode=document.getElementById("phpCode").value;
+            document.getElementById("phpCodeColoredPre").innerHTML=phpCode.replaceAll("<","&lt;");
+            hljs.highlightBlock(document.getElementById("phpCodeColoredPre"));
+        },false);
         function loadTemplate(template) {
             var xmlhttp;
 
@@ -87,6 +110,10 @@ setcookie("converter",true);
                             return;
                         }
                         document.getElementById("phpCode").value = xmlhttp.responseText;
+                        document.getElementById("phpCodeColoredPre").className="";
+                        document.getElementById("phpCode").className="hidden";
+                        document.getElementById("phpCodeColoredPre").innerHTML=xmlhttp.responseText.replaceAll("<","&lt;");
+                        hljs.highlightBlock(document.getElementById("phpCodeColoredPre"));
                     }
                     else if(xmlhttp.status == 400) {
                         alert('There was an error 400')
@@ -129,7 +156,12 @@ setcookie("converter",true);
                         }else{
                             document.getElementById("jsCode").className="";
                         }
-                        document.getElementById("jsCode").value = code;
+                        document.getElementById("jsCode").innerHTML=js_beautify(code,{
+                            "indent-char":"\\t",
+                            "preserve-newlines":true,
+                            "keep-array-indentation":true
+                        }).replaceAll("<","&lt;");
+                        hljs.highlightBlock(document.getElementById("jsCode"));
                     }
                     else if(xmlhttp.status == 400) {
                         alert('There was an error 400')
@@ -160,6 +192,18 @@ setcookie("converter",true);
         });
         document.getElementById("runButton").addEventListener("click",function (event) {
             eval(document.getElementById("jsCode").value);
+        });
+        document.getElementById("phpCodeColoredPre").addEventListener("click",function (event) {
+            document.getElementById("phpCodeColoredPre").className="hidden";
+            document.getElementById("phpCode").className="";
+            document.getElementById("phpCode").focus();
+        });
+        document.getElementById("phpCode").addEventListener("blur",function (event) {
+            document.getElementById("phpCodeColoredPre").className="";
+            document.getElementById("phpCode").className="hidden";
+            var phpCode=document.getElementById("phpCode").value;
+            document.getElementById("phpCodeColoredPre").innerHTML=phpCode.replaceAll("<","&lt;");
+            hljs.highlightBlock(document.getElementById("phpCodeColoredPre"));
         });
     </script>
 </body>

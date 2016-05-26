@@ -7,8 +7,8 @@
 - extends and interfaces
 - constants and define
 - Exceptions and catch
-- inline code
 - continue<num> ,break<num>
+- anonymous classes
 
 ####Planed####
 - include and require
@@ -20,7 +20,7 @@
 
 ####Not suport####
 - trait
-- goto (anywhere)
+- goto
 - declare(ticks)
 - yield
 

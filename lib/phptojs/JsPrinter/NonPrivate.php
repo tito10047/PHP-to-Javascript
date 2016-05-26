@@ -589,13 +589,18 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 		if ($node->class instanceof Expr\Variable){
 			$this->print_("(N._GET_(");
 		}
+        if ($node->class instanceof Stmt\Class_){
+            $node->class->parameters=$node->args;
+        }
         $this->p($node->class);
 		if ($node->class instanceof Expr\Variable){
 			$this->print_("))");
 		}
-        $this->print_('(');
-        $this->pCommaSeparated($node->args);
-        $this->print_(')');
+        if (!$node->class instanceof Stmt\Class_) {
+            $this->print_('(');
+            $this->pCommaSeparated($node->args);
+            $this->print_(')');
+        }
     }
 
     public function pExpr_Clone(Expr\Clone_ $node) {//TODO: implement this
@@ -691,8 +696,32 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         //$this->indent();
         $this->closureHelper->pushClass();
 
+        if ($node->name!=null) {
+            $className = $node->name;
+        }else{
+            $className = "__anonymous__";
+        }
+
+        $anonymousClassParameters=array();
+        if (isset($node->parameters)){
+            $anonymousClassParameters=$node->parameters;
+        }
+
+        $this->pushDelay();
+
+        if ($node->extends || $node->implements){
+            $this->indent()
+                ->print_("__extends(%{ClassName}, %{parent}",$className,$node->extends?'parent':'null');
+            if ($node->implements){
+                $this->print_(',arguments[1]');
+            }
+            $this->println(');')
+                ->outdent();
+        }
+        $this->popDelayToVar($extends);
+
         $this->pushDelay()->indent();
-        $this->println("function %{ClassName}(%{Arguments}){",$node->name,'/*constructor arguments*/')
+        $this->println("function %{ClassName}(%{Arguments}){",$className,'/*constructor arguments*/')
             ->indent();
         if ($node->extends){
             $this->println("parent.call(this %{Arguments});",'/*constructor arguments*/');
@@ -706,10 +735,11 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->outdent()
             ->println("}")
             ->outdent()
+            ->print_($extends)
             ->popDelay($classBody);
         $this->pushDelay()->indent();
         if ($node->type & Stmt\Class_::MODIFIER_ABSTRACT){
-            $this->println('%{ClassName}.prototype.__isAbstract__=true;',$node->name);
+            $this->println('%{ClassName}.prototype.__isAbstract__=true;',$className);
         }
         foreach($this->closureHelper->getClassStaticProperties() as $property){/** @var Stmt\PropertyProperty $property */
             //if ($node->type & Stmt\Class_::MODIFIER_STATIC){ TODO: implement private static property
@@ -719,35 +749,45 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             //}
         }
         foreach($this->closureHelper->getClassMethods() as $method){/** @var Stmt\ClassMethod $method */
-            $this->print_("%{ClassName}.%{prototype}",$node->name,$method->type & Stmt\Class_::MODIFIER_STATIC?"":"prototype.");
+            $this->print_("%{ClassName}.%{prototype}",$className,$method->type & Stmt\Class_::MODIFIER_STATIC?"":"prototype.");
             $this->pStmt_ClassMethod($method,true);
         }
         foreach($this->closureHelper->getClassConstants() as $consts){
             /** @var Stmt\ClassConst $consts */
             foreach($consts as $cons){
-                $this->print_("%{ClassName}.",$node->name);
+                $this->print_("%{ClassName}.",$className);
                 $this->pConst($cons);
                 $this->println(";");
             }
 
         }
-        $this->println("return %{ClassName};",$node->name);
+        $this->println("return %{ClassName};",$className);
         $this->outdent()
             ->popDelay($methodsAndOthers);
-        $this
-            ->println("var %{Class} = %{useNamSPC}(function (%{useParent}){",
-                $node->name,
-                $this->closureHelper->isNamespace()?"this.{$node->name} = ":'',
-                $node->extends?'parent':'');
-        if ($node->extends || $node->implements){
-            $this->indent()
-                ->print_("__extends(%{ClassName}, %{parent}",$node->name,$node->extends?'parent':'null');
-            if ($node->implements){
-                $this->print_(',arguments[1]');
-            }
-            $this->println(');')
-                ->outdent();
+        $format="";
+        $params=[];
+        if ($node->name!=null){
+            $format.="var %{Class} = ";
+            $params[]=$node->name;
         }
+        if ($this->closureHelper->isNamespace()){
+            $format.="%{useNamSPC}";
+            $params[]="this.{$node->name} = ";
+        }
+        $format.="(function (%{useParent}";
+        $params[]=$node->extends?'parent':'';
+        call_user_func_array(array($this->writer,"print_"),array_merge([$format],$params));
+
+        if (count($anonymousClassParameters)){
+            if ($node->implements){
+                $this->print_(",__implements");
+            }
+            $this->print_(",");
+            $this->pCommaSeparated($anonymousClassParameters);
+        }
+
+        $this->println("){");
+
         $this->writeDelay($classBody);
         $this->writeDelay($methodsAndOthers);
 
@@ -760,8 +800,15 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
                 $this->print_("]");
             }
         }
-        $this->println(");");
-
+        if (count($anonymousClassParameters)){
+            $this->print_(",");
+            $this->pCommaSeparated($anonymousClassParameters);
+        }
+        $this->print_(")");
+        if (!isset($node->parameters)){
+            $this->print_(";");
+        }
+        $this->println();
         $this->closureHelper->popClass();
         //$this->outdent();
     }

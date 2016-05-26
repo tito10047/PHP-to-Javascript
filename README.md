@@ -78,3 +78,4 @@ Is converted to
 
     document.write(N.foo.foo1.AInt.FOO)
 
+[More Examples](https://github.com/tito10047/PhpTpJs/tree/master/test/code/jsPrinter/jsSrc/generated/NonPrivate)

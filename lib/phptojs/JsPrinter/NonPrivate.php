@@ -1118,19 +1118,20 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->popDelayToVar($varName);
 
         $this->pushLoop(true);
-//TODO: $this->pStmts($node->cases);
+        $this->pStmts($node->stmts);
         $this->popLoopPrintName($loopBody);
 
         $this->println("for (%{key} in %{expr}){",$keyName,$expression)
             ->indent()
             ->println("%{varName} = %{expr}[%{key}]",$varName,$expression,$keyName)
             ->print_($loopBody)
-            ->outdent();
+            ->outdent()
+            ->println("}");
     }
 
     public function pStmt_While(Stmt\While_ $node) {
         $this->pushLoop(true);
-//TODO: $this->pStmts($node->cases);
+        $this->pStmts($node->stmts);
         $this->popLoopPrintName($loopBody);
 
         $this->pushDelay();
@@ -1146,7 +1147,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pStmt_Do(Stmt\Do_ $node) {
         $this->pushLoop(true);
-//TODO: $this->pStmts($node->cases);
+        $this->pStmts($node->stmts);
         $this->popLoopPrintName($loopBody);
 
         $this->pushDelay(false);

@@ -1,4 +1,4 @@
-var beautify = require('js-beautify'),
+var beautify = require('/usr/local/lib/node_modules/js-beautify/js/index.js'),
     fs = require('fs'),
     path = require('path');
 

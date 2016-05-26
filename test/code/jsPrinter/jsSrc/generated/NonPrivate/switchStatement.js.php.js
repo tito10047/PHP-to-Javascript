@@ -1,36 +1,22 @@
-function testSwitchFunction(name, value){
-	if (typeof value == 'undefined') value=FALSE;
-		var result;
-		result = FALSE;
-		switch (	name){
-				case 'output':
-				result = 'output';
-				break ;
-
-	
-
+function testSwitchFunction(name, value) {
+	if (typeof value == 'undefined') value = FALSE;
+	var result;
+	result = FALSE;
+	switch (name) {
+		case 'output':
+			result = 'output';
+			break;
 		case 'silent':
-				result = 'notloud';
-				break ;
-
-	
-
+			result = 'notloud';
+			break;
 		case 'custom':
-				result = value;
-				break ;
-
-	
-
+			result = value;
+			break;
 		default:
-				result = 'Unknown';
-	
-
+			result = 'Unknown';
+	}
+	return result;
 }
-
-		return result;
-
-}
-
 assert_(testSwitchFunction('output'), 'output');
 assert_(testSwitchFunction('custom', 'bar'), 'bar');
 assert_(testSwitchFunction('shamoan'), 'Unknown');

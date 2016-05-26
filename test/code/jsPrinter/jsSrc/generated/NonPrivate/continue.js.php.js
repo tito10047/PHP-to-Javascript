@@ -1,13 +1,10 @@
 var total;
 total = 0;
 var i;
-for(i = 0; i < 10; i++){
-		if (i % 2 == 0){
-				continue ;
-
+for (i = 0; i < 10; i++) {
+	if (i % 2 == 0) {
+		continue;
 	}
-
-		total++;
+	total++;
 }
-
 assert_(total, 5);

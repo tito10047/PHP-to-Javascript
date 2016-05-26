@@ -4,12 +4,10 @@ var b;
 b = 1;
 var c;
 c = 2;
-var Foo = (function (){
-	function Foo(/*constructor arguments*/){
-	}
+var Foo = (function() {
+	function Foo( /*constructor arguments*/ ) {}
 	return Foo;
 })();
-
 ++a;
 --a;
 a++;
@@ -26,7 +24,7 @@ a / b;
 a % b;
 a + b;
 a - b;
-a . b;
+a.b;
 a << b;
 a >> b;
 a < b;
@@ -43,7 +41,7 @@ a ^ b;
 a | b;
 a && b;
 a || b;
-a?b:c;
+a ? b : c;
 a = b;
 a *= b;
 a /= b;

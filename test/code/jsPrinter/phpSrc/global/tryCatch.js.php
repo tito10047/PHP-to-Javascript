@@ -21,6 +21,7 @@ try{
     assert_(true,false,"Foo2Exception");
 }catch (Exception $e){
     assert_(true,false,"Foo2Exception");
+    $t = $e->getLine();
 }finally{
     $finally_=true;
 }

@@ -59,6 +59,8 @@ try {
 	} else if (__e__ instanceof Exception) {
 		e = __e__;
 		assert_(true, false, 'Foo2Exception');
+		var t;
+		t = e.getLine();
 	}
 } finally {
 	finally_ = true;

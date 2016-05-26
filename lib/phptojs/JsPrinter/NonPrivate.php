@@ -553,7 +553,19 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_Instanceof(Expr\Instanceof_ $node) {
-        $this->pInfixOp('Expr_Instanceof', $node->expr, ' instanceof ', $node->class);
+		$this->p($node->expr);
+		$this->print_(" instanceof ");
+		if ($node->class instanceof Expr\Variable){
+			$this->print_("N._GET_(");
+		}else{
+			if ($node->class instanceof Name && count($node->class->parts)>1) {
+				$this->print_("N.");
+			}
+		}
+		$this->p($node->class);
+		if ($node->class instanceof Expr\Variable){
+			$this->print_(")");
+		}
     }
 
     // Unary expressions
@@ -863,7 +875,13 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pExpr_New(Expr\New_ $node) {//TODO: implement this
         $this->print_("new ");
+		if ($node->class instanceof Expr\Variable){
+			$this->print_("(N._GET_(");
+		}
         $this->p($node->class);
+		if ($node->class instanceof Expr\Variable){
+			$this->print_("))");
+		}
         $this->print_('(');
         $this->pCommaSeparated($node->args);
         $this->print_(')');
@@ -1363,6 +1381,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->outdent()
             ->println("}");
 
+        $this->closureHelper->useVar($node->var);
 		$catchesVars[]=$node->var;
     }
 

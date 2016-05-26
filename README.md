@@ -26,17 +26,18 @@
 - yield
 
 #### Usage####
-
+```php
     $parser        = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
     $prettyPrinter = new \phptojs\JsPrinter\NonPrivate();
 
     $phpCode = file_get_contents('path/to/phpCode');
     $stmts = $parser->parse($phpCode);
-    $jsCode $prettyPrinter->jsPrint($stmts);
-
+    $jsCode = $prettyPrinter->jsPrint($stmts);
+```
 Example
 ===================
 
+```php
     namespace foo\foo1{
         interface AInt{
             const FOO=1;
@@ -58,9 +59,10 @@ Example
     namespace{
         echo \foo\foo1\AInt::FOO;
     }
+```
 
 Is converted to
-
+```javascript
     N._INIT_('foo.foo1');
     (function() {
         var AInt = this.AInt = (function(){
@@ -87,5 +89,5 @@ Is converted to
     }).call(foo.foo1);
 
     document.write(N.foo.foo1.AInt.FOO)
-
+```
 [More Examples](https://github.com/tito10047/PhpTpJs/tree/master/test/code/jsPrinter/jsSrc/generated/NonPrivate)

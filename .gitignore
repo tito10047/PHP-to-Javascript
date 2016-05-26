@@ -3,4 +3,3 @@
 .idea/
 composer.lock
 vendor
-/test/code/jsPrinter/jsSrc/generated/*

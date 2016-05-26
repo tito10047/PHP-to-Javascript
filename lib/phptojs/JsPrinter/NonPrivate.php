@@ -826,7 +826,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             $format.="var %{Class} = ";
             $params[]=$node->name;
         }
-        if ($this->closureHelper->isNamespace()){
+        if ($this->closureHelper->isNamespace() && !isset($node->parameters)){
             $format.="%{useNamSPC}";
             $params[]="this.{$node->name} = ";
         }

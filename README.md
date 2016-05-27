@@ -88,7 +88,7 @@ Is converted to
             C.prototype.funcBAbsA = function(){};
             return C;
         })(BAbs,[AInt]);
-    }).call(foo.foo1);
+    }).call(N.foo.foo1);
 
     document.write(N.foo.foo1.AInt.FOO)
 ```

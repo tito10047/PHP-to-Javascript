@@ -13,7 +13,7 @@ setcookie("converter",true);
 <head>
     <meta charset="UTF-8">
     <title>Php to Js converter</title>
-    <script src="/scripts.php"></script>
+    <script src="/scripts.php" type="application/javascript"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
     <script src="beautify.js"></script>
@@ -163,7 +163,7 @@ setcookie("converter",true);
                         document.getElementById("jsCode").innerHTML=js_beautify(code,{
                             "indent-char":"\\t",
                             "preserve-newlines":true,
-                            "keep-array-indentation":true
+                            "keep-array-indentation":false
                         }).replaceAll("<","&lt;");
                         hljs.highlightBlock(document.getElementById("jsCode"));
                     }

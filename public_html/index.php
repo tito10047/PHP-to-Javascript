@@ -25,7 +25,7 @@ setcookie("converter",true);
         }
         .center {
             margin: auto;
-            width: 80%;
+            width: 1200px;
             padding: 10px;
         }
         table td{
@@ -49,7 +49,7 @@ setcookie("converter",true);
             <h1>PHP to JavaScript converter</h1>
             <h3><a href="https://github.com/tito10047/phptojs" target="_blank">More info</a></h3>
         </div>
-        <table style="width: 100%;600px;">
+        <table style="width: 1200px;">
             <tr>
                 <td>
                     <div style="text-align: center;">
@@ -209,6 +209,16 @@ setcookie("converter",true);
             document.getElementById("phpCodeColoredPre").innerHTML=phpCode.replaceAll("<","&lt;");
             hljs.highlightBlock(document.getElementById("phpCodeColoredPre"));
         });
+    </script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-22668293-2', 'auto');
+        ga('send', 'pageview');
+
     </script>
 </body>
 </html>

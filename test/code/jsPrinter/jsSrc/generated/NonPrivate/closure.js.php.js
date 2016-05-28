@@ -21,6 +21,12 @@ foo3 = function() {
 	a = 7;
 	return a;
 };
+var testAnonymusFunc;
+testAnonymusFunc = 5;
+(function() {
+	testAnonymusFunc = 6;
+})();
+assert_(testAnonymusFunc, 6, 'testAnonymusFunc');
 var Foo = (function() {
 	function Foo( /*constructor arguments*/ ) {}
 	Foo.prototype.foo1 = function() {

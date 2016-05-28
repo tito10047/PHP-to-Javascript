@@ -475,7 +475,13 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     // Function calls and similar constructs
 
     public function pExpr_FuncCall(Expr\FuncCall $node) {
+		if ($node->name instanceof Expr\Closure){
+			$this->print_("(");
+		}
         $this->p($node->name);
+		if ($node->name instanceof Expr\Closure){
+			$this->print_(")");
+		}
         $this->print_('(');
         $this->pCommaSeparated($node->args);
         $this->print_(')');

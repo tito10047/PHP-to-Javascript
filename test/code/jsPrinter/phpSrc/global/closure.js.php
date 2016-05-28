@@ -15,6 +15,12 @@ $foo3 = function () {
     return $a;
 };
 
+$testAnonymusFunc=5;
+(function() use(&$testAnonymusFunc){
+    $testAnonymusFunc=6;
+})();
+assert_($testAnonymusFunc,6,'testAnonymusFunc');
+
 class Foo
 {
     function foo1()

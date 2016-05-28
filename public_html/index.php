@@ -217,6 +217,27 @@ setcookie("converter",true);
             document.getElementById("phpCodeColoredPre").innerHTML=phpCode.replaceAll("<","&lt;");
             hljs.highlightBlock(document.getElementById("phpCodeColoredPre"));
         });
+		document.getElementById("phpCode").addEventListener("keydown",function (e) {
+			if(e.keyCode === 9) { // tab was pressed
+				// get caret position/selection
+				var start = this.selectionStart;
+				var end = this.selectionEnd;
+
+				var value = this.value;
+
+				if (e.shiftKey){
+					if (value.charAt(start-1)=="\t"){
+						this.value = (value.substring(0, start-1) + value.substring(end));
+						this.selectionStart = this.selectionEnd = start - 1;
+					}
+				}else {
+					this.value = (value.substring(0, start) + "\t" + value.substring(end));
+					this.selectionStart = this.selectionEnd = start + 1;
+				}
+				// prevent the focus lose
+				e.preventDefault();
+			}
+		});
     </script>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

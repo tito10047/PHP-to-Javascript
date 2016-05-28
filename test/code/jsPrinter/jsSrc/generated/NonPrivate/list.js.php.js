@@ -12,7 +12,7 @@ __LIST_VALUES__ = {
 };
 isNull = __LIST_VALUES__[0];
 isFoo = __LIST_VALUES__[1];
-isFive = __LIST_VALUES__[2];;
+isFive = __LIST_VALUES__[2];
 assert_(isNull, null, 'is null');
 assert_(isFoo, 'foo', 'is foo');
 assert_(isFive, 5, 'is five');
@@ -21,5 +21,5 @@ __LIST_VALUES__ = {
 	1: 'foo',
 	2: 5
 };
-isFive = __LIST_VALUES__[2];;
+isFive = __LIST_VALUES__[2];
 assert_(isFive, 5, 'is five again');

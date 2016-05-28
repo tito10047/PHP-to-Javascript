@@ -582,7 +582,12 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 				if ($varName==null){
 					continue;
 				}
-				$this->println("%{varName}=__LIST_VALUES__[%{keyPos}];",$varName,$pos);
+				$this->print_("%{varName}=__LIST_VALUES__[%{keyPos}]",$varName,$pos);
+				if ($pos<count($pList)-1){
+					$this->println(";");
+				}else{
+					$this->println();
+				}
 			}
 		}
 	}

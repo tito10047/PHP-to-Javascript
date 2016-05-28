@@ -18,6 +18,8 @@ setcookie("converter",true);
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
     <script src="beautify.js"></script>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
 <body>
     <style>
@@ -47,7 +49,12 @@ setcookie("converter",true);
     <div class="center">
         <div style="text-align: center;">
             <h1>PHP to JavaScript converter</h1>
-            <h3><a href="https://github.com/tito10047/phptojs" target="_blank">More info</a></h3>
+            <h3><a href="https://github.com/tito10047/phptojs" target="_blank">See more on github</a></h3>
+			<div>
+				<a class="github-button" href="https://github.com/tito10047/phptojs" data-icon="octicon-eye" data-style="mega" data-count-href="/tito10047/phptojs/watchers" data-count-api="/repos/tito10047/phptojs#subscribers_count" data-count-aria-label="# watchers on GitHub" aria-label="Watch tito10047/phptojs on GitHub">Watch</a>
+				<a class="github-button" href="https://github.com/tito10047/phptojs" data-icon="octicon-star" data-style="mega" data-count-href="/tito10047/phptojs/stargazers" data-count-api="/repos/tito10047/phptojs#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star tito10047/phptojs on GitHub">Star</a>
+				<a class="github-button" href="https://github.com/tito10047/phptojs/issues" data-icon="octicon-issue-opened" data-style="mega" data-count-api="/repos/tito10047/phptojs#open_issues_count" data-count-aria-label="# issues on GitHub" aria-label="Issue tito10047/phptojs on GitHub">Issue</a>
+			</div>
         </div>
         <table style="width: 1200px;">
             <tr>
@@ -60,6 +67,7 @@ setcookie("converter",true);
                             <option value="<?=$filename?>"><?=$filename?></option>
                             <?php endforeach;?>
                         </select>
+						<br><br>
                     </div>
                     <div style="height: 600px;">
                         <pre style="height: 600px;width: 554px;border: 1px solid #a9a9a9;" id="phpCodeColoredPre"><code id="phpCodeColored" style="width: 100%;height: 100%;border: 1px solid #a9a9a9;display: block;">&lt;?php
@@ -75,7 +83,7 @@ setcookie("converter",true);
                     <button id="runButton">Execute</button>
                 </td>
                 <td>
-                    <div style="text-align: center;">Converted JavaScript code<br></div>
+                    <div style="text-align: center;">Converted JavaScript code<br><br></div>
                     <div style="height: 600px;">
                         <pre style="height: 600px;">
                             <code id="jsCode" style="width: 554px;height: 600px;border: 1px solid #a9a9a9;display: block;"></code>

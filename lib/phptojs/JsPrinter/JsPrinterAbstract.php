@@ -42,7 +42,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
             $msg = "not implemented ".$message.PHP_EOL;
             if ($throw){
                 if (self::$throwErrors==false)
-                    throw new \RuntimeException($message);
+                    throw new \RuntimeException("not implemented ".$message);
             }
             if (self::$showWarnings==false) return;
             echo $msg;

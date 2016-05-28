@@ -1,7 +1,6 @@
-### PHP to JavaScript convertor###
-===============
-#### [Online Convertor](http://phptojs.mostka.com/)####
-===============
+PHP to JavaScript convertor
+===================
+#### See playground: [Online Convertor](http://phptojs.mostka.com/)####
 
 ####Suports####
 - Namespaces, use
@@ -12,6 +11,7 @@
 - continue<num> ,break<num>
 - anonymous classes
 - magic constants
+- list() 
 
 ####Planed####
 - include and require

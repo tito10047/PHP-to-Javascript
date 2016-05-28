@@ -533,8 +533,57 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         $this->println('eval(%{include}("%{path}.js"))',$map[$node->type],$path);
     }
 
-    public function pExpr_List(Expr\List_ $node) {//TODO: implement this
-        self::notImplemented(true,' list()',true);
+	/**
+	 * @see PhpParser\Printer\PrinterAbstract::pInfixOp
+	 * @param $type
+	 * @param \PhpParser\Node $leftNode
+	 * @param string|int $operator or delayId
+	 * @param \PhpParser\Node $rightNode
+	 * @return void
+	 */
+	protected function pInfixOp($type, Node $leftNode, $operator, Node $rightNode) {
+		list($precedence, $associativity) = $this->precedenceMap[$type];
+
+		$pList=[];
+		$listNode=null;
+		if ($leftNode instanceof Expr\List_){
+			$listNode = $leftNode;
+			$leftNode = new Expr\Variable("__LIST_VALUES__");
+			$pList=[];
+			foreach ($listNode->vars as $var) {
+				if ($var==null){
+					$pList[]=null;
+					continue;
+				}
+				$this->closureHelper->pushVar($var->name);
+				$pList[]=$var->name;
+			}
+			$this->closureHelper->pushVar("__LIST_VALUES__");
+			$this->printVarDef();
+		}
+
+		$this->pPrec($leftNode, $precedence, $associativity, -1);
+		if (gettype($operator)=="integer"){
+			$this->writer->writeDelay($operator);
+		}else {
+			$this->writer->print_($operator);
+		}
+		$this->pPrec($rightNode, $precedence, $associativity, 1);
+
+		if ($listNode instanceof Expr\List_) {
+			$this->println(";");
+			foreach($pList as $pos=>$varName){
+				if ($varName==null){
+					continue;
+				}
+				$this->println("%{varName}=__LIST_VALUES__[%{keyPos}];",$varName,$pos);
+			}
+		}
+	}
+
+
+	public function pExpr_List(Expr\List_ $node,$force=false) {
+
     }
 
     public function pExpr_Variable(Expr\Variable $node) {//TODO: implement this

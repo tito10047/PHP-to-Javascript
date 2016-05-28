@@ -80,9 +80,6 @@ namespace PhpTpJs {
 
             $jsAsserts = $this->runJsTest($jsFilePath);
             foreach ($jsAsserts as $assert) {
-                if (!isset($assert->what)){//$assert->what=null;
-                    var_dump($jsAsserts);exit;
-                }
                 $this->assertEquals($assert->what, $assert->to, $fileName . ".js: " . $assert->message);
             }
 

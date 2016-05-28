@@ -1112,21 +1112,34 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             $this->popDelayToVar($keyName);
         }else{
             $keyName = "_key_";
+			$this->closureHelper->pushVar($keyName);
         }
+
+		$this->pushDelay();
+		$this->printVarDef();
+		$this->popDelayToVar($vars);
+
         $this->pushDelay();     //value name
         $this->p($node->valueVar);
         $this->popDelayToVar($varName);
+
+		$this->pushDelay();
+		$this->printVarDef();
+		$this->popDelayToVar($keyVar);
 
         $this->pushLoop(true);
         $this->pStmts($node->stmts);
         $this->popLoopPrintName($loopBody);
 
-        $this->println("for (%{key} in %{expr}){",$keyName,$expression)
-            ->indent()
-            ->println("%{varName} = %{expr}[%{key}]",$varName,$expression,$keyName)
-            ->print_($loopBody)
-            ->outdent()
-            ->println("}");
+		$this->print_($vars)
+			->println("for (%{key} in %{expr}){",$keyName,$expression)
+			->indent()
+			->println("if (!%{expr}.hasOwnProperty(%{key})) continue;",$expression,$keyName)
+			->println($keyVar)
+			->println("%{varName} = %{expr}[%{key}];",$varName,$expression,$keyName)
+			->print_($loopBody)
+			->outdent()
+			->println("}");
     }
 
     public function pStmt_While(Stmt\While_ $node) {
@@ -1399,10 +1412,14 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         }
     }
 
+	/**
+	 * @return $this
+	 */
     protected function printVarDef(){
         $vars = $this->closureHelper->getVarsDef();
         if (count($vars)){
             $this->println('var '.join(',',$vars).';');
         }
+		return $this;
     }
 }

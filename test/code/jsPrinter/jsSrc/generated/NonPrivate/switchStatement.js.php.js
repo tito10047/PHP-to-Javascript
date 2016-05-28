@@ -1,7 +1,7 @@
 function testSwitchFunction(name, value) {
-	if (typeof value == 'undefined') value = FALSE;
+	if (typeof value == 'undefined') value = false;
 	var result;
-	result = FALSE;
+	result = false;
 	switch (name) {
 		case 'output':
 			result = 'output';

@@ -12,7 +12,7 @@ PHP to JavaScript convertor
 - anonymous classes
 - magic constants
 - list()
-- magic methods __get __set and __call (only in ES6 [see Proxy in compatibility table](https://kangax.github.io/compat-table/es6/))
+- magic methods __get __set and __call (only in ES6 [see Proxy in compatibility table](https://kangax.github.io/compat-table/es6/#test-Proxy))
 
 ####Planed####
 - include and require

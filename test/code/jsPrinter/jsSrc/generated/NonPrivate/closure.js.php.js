@@ -28,7 +28,7 @@ testAnonymusFunc = 5;
 })();
 assert_(testAnonymusFunc, 6, 'testAnonymusFunc');
 var Foo = (function() {
-	function Foo( /*constructor arguments*/ ) {}
+	function Foo() {}
 	Foo.prototype.foo1 = function() {
 		var a;
 		a = 8;

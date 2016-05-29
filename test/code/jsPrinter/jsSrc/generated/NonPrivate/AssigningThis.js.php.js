@@ -2,7 +2,7 @@ function paramTest(object, otherVar) {
 	return object;
 }
 var TestClass = (function() {
-	function TestClass( /*constructor arguments*/ ) {
+	function TestClass() {
 		this.five = 5;
 	}
 	TestClass.prototype.getThis = function() {

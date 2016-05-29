@@ -1,26 +1,26 @@
 var FooException_ = (function(parent) {
-	function FooException_( /*constructor arguments*/ ) {
+	function FooException_() {
 		parent.call(this /*constructor arguments*/ );
 	}
 	__extends(FooException_, parent);
 	return FooException_;
 })(Exception);
 var Foo2Exception_ = (function(parent) {
-	function Foo2Exception_( /*constructor arguments*/ ) {
+	function Foo2Exception_() {
 		parent.call(this /*constructor arguments*/ );
 	}
 	__extends(Foo2Exception_, parent);
 	return Foo2Exception_;
 })(FooException_);
 var BeeException_ = (function(parent) {
-	function BeeException_( /*constructor arguments*/ ) {
+	function BeeException_() {
 		parent.call(this /*constructor arguments*/ );
 	}
 	__extends(BeeException_, parent);
 	return BeeException_;
 })(Exception);
 var GooException_ = (function(parent) {
-	function GooException_( /*constructor arguments*/ ) {
+	function GooException_() {
 		parent.call(this /*constructor arguments*/ );
 	}
 	__extends(GooException_, parent);

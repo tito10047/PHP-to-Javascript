@@ -5,7 +5,7 @@ N._INIT_('AAA');
 	this.FOO = FOO;
 	assert_(FOO, 2);
 	var FooCls = this.FooCls = (function() {
-		function FooCls( /*constructor arguments*/ ) {
+		function FooCls() {
 			this.foo2 = null;
 		}
 		FooCls.foo = 4;

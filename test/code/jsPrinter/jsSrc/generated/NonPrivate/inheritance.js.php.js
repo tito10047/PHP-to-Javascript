@@ -1,5 +1,5 @@
 var FooInt = (function() {
-	function FooInt( /*constructor arguments*/ ) {
+	function FooInt() {
 		__INTERFACE_NEW__();
 	}
 	FooInt.prototype.fooIntFunc1 = function(a, b) {
@@ -8,7 +8,7 @@ var FooInt = (function() {
 	return FooInt;
 })();
 var FooAbs = (function() {
-	function FooAbs( /*constructor arguments*/ ) {}
+	function FooAbs() {}
 	__extends(FooAbs, null, arguments[1]);
 	FooAbs.prototype.__isAbstract__ = true;
 	FooAbs.prototype.fooAbsFunc1 = function(a, b) {
@@ -20,7 +20,7 @@ var FooAbs = (function() {
 	return FooAbs;
 })(null, [FooInt]);
 var FooParent = (function(parent) {
-	function FooParent( /*constructor arguments*/ ) {
+	function FooParent() {
 		parent.call(this /*constructor arguments*/ );
 		this.foo = 5;
 	}
@@ -35,7 +35,7 @@ var FooParent = (function(parent) {
 	return FooParent;
 })(FooAbs);
 var FooChild = (function(parent) {
-	function FooChild( /*constructor arguments*/ ) {
+	function FooChild() {
 		parent.call(this /*constructor arguments*/ );
 		this.foo = 6;
 	}

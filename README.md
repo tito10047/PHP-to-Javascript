@@ -11,7 +11,8 @@ PHP to JavaScript convertor
 - continue<num> ,break<num>
 - anonymous classes
 - magic constants
-- list() 
+- list()
+- magic methods __get __set and __call (only in ES6 [see compatibility table](https://kangax.github.io/compat-table/es6/))
 
 ####Planed####
 - include and require

@@ -1,5 +1,5 @@
 var Foo = (function() {
-	function Foo( /*constructor arguments*/ ) {}
+	function Foo() {}
 	Foo.prototype.getClassName = function() {
 		return 'Foo';
 	};
@@ -20,7 +20,7 @@ assert_(getFunctionName(), 'getFunctionName', '__FUNCTION__');
 N._INIT_('testMagicConstants');
 (function() {
 	var Foo = this.Foo = (function() {
-		function Foo( /*constructor arguments*/ ) {}
+		function Foo() {}
 		Foo.prototype.getClassName = function() {
 			return 'testMagicConstants\\Foo';
 		};

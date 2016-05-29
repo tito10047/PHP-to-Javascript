@@ -5,7 +5,7 @@ b = 1;
 var c;
 c = 2;
 var Foo = (function() {
-	function Foo( /*constructor arguments*/ ) {}
+	function Foo() {}
 	return Foo;
 })();
 ++a;

@@ -1,7 +1,7 @@
 N._INIT_('test');
 (function() {
 	var Foo = this.Foo = (function() {
-		function Foo( /*constructor arguments*/ ) {}
+		function Foo() {}
 		Foo.prototype.test = function() {
 			return 6;
 		};
@@ -9,7 +9,7 @@ N._INIT_('test');
 	})();
 }).call(N.test);
 var Foo = (function() {
-	function Foo( /*constructor arguments*/ ) {
+	function Foo() {
 		this.publicVar = 'publicVar';
 	}
 	Foo.publicStaticVar = 'publicStaticVar';

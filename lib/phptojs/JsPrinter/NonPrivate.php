@@ -57,7 +57,8 @@ class ClosureHelper{
      * @var Stmt\ClassMethod[]
      */
     private $classMethods = array();
-    private $classConstructor = null;
+	private $_classHasConstructor=false;
+    private $classConstructorParams = null;
     /**
      * @var Stmt\PropertyProperty[]
      */
@@ -68,39 +69,46 @@ class ClosureHelper{
     private $currentClassName = "";
     private $currentMethodName = "";
     private $currentFunctionName = "";
+    private $classHasMagicMethods = false;
     public function pushClass($className){
 
         $this->classStack[]=array(
             0=>$this->classConstants,
             1=>$this->classMethods,
-            2=>$this->classConstructor,
+            2=>$this->classConstructorParams,
             3=>$this->classStaticProperties,
             4=>$this->classIsInterface,
             5=>$this->currentClassName,
             6=>$this->currentMethodName,
-            7=>$this->currentFunctionName
+            7=>$this->currentFunctionName,
+			8=>$this->classHasMagicMethods,
+			9=>$this->_classHasConstructor
         );
         $this->classConstants           = array();
         $this->classMethods             = array();
-        $this->classConstructor         = null;
+        $this->classConstructorParams         = null;
         $this->classStaticProperties    = array();
         $this->classIsInterface         = $this->nextClassIsInterface;
         $this->nextClassIsInterface=false;
         $this->currentClassName=$className;
         $this->currentMethodName="";
         $this->currentFunctionName="";
+		$this->classHasMagicMethods=false;
+		$this->_classHasConstructor=false;
     }
 
     public function popClass(){
         $data = array_pop($this->classStack);
         $this->classConstants           = $data[0];
         $this->classMethods             = $data[1];
-        $this->classConstructor         = $data[2];
+        $this->classConstructorParams   = $data[2];
         $this->classStaticProperties    = $data[3];
         $this->classIsInterface         = $data[4];
         $this->currentClassName         = $data[5];
         $this->currentMethodName        = $data[6];
         $this->currentFunctionName      = $data[7];
+		$this->classHasMagicMethods		= $data[8];
+		$this->_classHasConstructor		= $data[9];
     }
 
     /** @return Stmt\ClassConst[] */
@@ -108,7 +116,7 @@ class ClosureHelper{
         return $this->classConstants;}
     /** @return Stmt\ClassMethod */
     public function getClassConstructor(){
-        return $this->classConstructor;}
+        return $this->classConstructorParams;}
     /** @return Stmt\ClassMethod[] */
     public function getClassMethods(){
         return $this->classMethods;}
@@ -122,15 +130,32 @@ class ClosureHelper{
     /** @param Stmt\ClassConst $classConstant */
     public function addClassConstants($classConstant){
         $this->classConstants = $classConstant;}
-    /** @param null $classConstructor */
-    public function setClassConstructor($classConstructor){
-        $this->classConstructor = $classConstructor;}
+
+	/**
+	 * @param $classConstructorParams
+	 */
+    public function setClassConstructorParams($classConstructorParams){
+		$this->_classHasConstructor=true;
+        $this->classConstructorParams = $classConstructorParams;
+	}
+	public function getClassConstructorParams(){
+		return $this->classConstructorParams;
+	}
+	public function classHasConstructor(){
+		return $this->_classHasConstructor;
+	}
     /** @param boolean $isInterface */
     public function setClassIsInterface($isInterface){
         $this->classIsInterface = $isInterface;}
     public function setNextClassIsInterface(){
         $this->nextClassIsInterface=true;
     }
+	public function setClassHasMagicMethods(){
+		$this->classHasMagicMethods=true;
+	}
+	public function getClassHasMagicMethods(){
+		return $this->classHasMagicMethods;
+	}
     public function getClassName(){
         $className="";
         if ($this->isNamespace){
@@ -866,23 +891,12 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         }
         $this->popDelayToVar($extends);
 
-        $this->pushDelay()->indent();
-        $this->println("function %{ClassName}(%{Arguments}){",$className,'/*constructor arguments*/')
-            ->indent();
-        if ($node->extends){
-            $this->println("parent.call(this %{Arguments});",'/*constructor arguments*/');
-        }
-        if ($this->closureHelper->classIsInterface()){
-            $this->println('__INTERFACE_NEW__();');
-        }
-        $this->closureHelper->pushVarScope();
-        $this->pStmts($node->stmts);
-        $this->closureHelper->popVarScope();
-        $this->outdent()
-            ->println("}")
-            ->outdent()
-            ->print_($extends)
-            ->popDelay($classBody);
+		$this->pushDelay();
+		$this->closureHelper->pushVarScope();
+		$this->pStmts($node->stmts);
+		$this->closureHelper->popVarScope();
+		$this->popDelay($constructorBody);
+
         $this->pushDelay()->indent();
         if ($node->type & Stmt\Class_::MODIFIER_ABSTRACT){
             $this->println('%{ClassName}.prototype.__isAbstract__=true;',$className);
@@ -898,6 +912,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             $this->print_("%{ClassName}.%{prototype}",$className,$method->type & Stmt\Class_::MODIFIER_STATIC?"":"prototype.");
             $this->pStmt_ClassMethod($method,true);
         }
+
         foreach($this->closureHelper->getClassConstants() as $consts){
             /** @var Stmt\ClassConst $consts */
             foreach($consts as $cons){
@@ -907,9 +922,50 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             }
 
         }
-        $this->println("return %{ClassName};",$className);
+		if ($this->closureHelper->getClassHasMagicMethods()){
+			$this->println("var __handler = {")
+				->indent()
+				->println("construct: function(target, args) {")
+				->indent()
+				->println("var obj = Object.create(%{ClassName}.prototype);",$className)
+				->println("%{ClassName}.apply(obj,args);",$className)
+				->println("return new Proxy(obj,__PROXY_HANDLER);")
+				->outdent()
+				->println("}")
+				->outdent()
+				->println("};")
+				->println("return new Proxy(%{ClassName}, __handler);",$className);
+		}else {
+			$this->println("return %{ClassName};", $className);
+		}
         $this->outdent()
             ->popDelay($methodsAndOthers);
+
+		$this->pushDelay()->indent();
+		$this->print_("function %{ClassName}(",$className);
+		if ($this->closureHelper->classHasConstructor()){
+			$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());
+		}
+		$this->println("){");
+		$this->indent();
+		if ($node->extends){
+			$this->println("parent.call(this %{Arguments});",'/*constructor arguments*/');
+		}
+		if ($this->closureHelper->classIsInterface()){
+			$this->println('__INTERFACE_NEW__();');
+		}
+		$this->writeDelay($constructorBody);
+		if ($this->closureHelper->classHasConstructor()){
+			$this->print_("this.__construct(");
+			$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());
+			$this->println(");");
+		}
+		$this->outdent()
+			->println("}")
+			->outdent()
+			->print_($extends)
+			->popDelay($classBody);
+
         $format="";
         $params=[];
         if ($node->name!=null){
@@ -1005,6 +1061,12 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pStmt_ClassMethod(Stmt\ClassMethod $node, $force=false) {//TODO: implement this
         if ($force){
+			if (in_array($node->name,["__get","__set","__call"])){
+				$this->closureHelper->setClassHasMagicMethods();
+			}
+			if ($node->name=="__construct"){
+				$this->closureHelper->setClassConstructorParams($node->params);
+			}
             $this->closureHelper->pushVarScope();
 
             self::notImplemented($node->byRef,'method return reference');

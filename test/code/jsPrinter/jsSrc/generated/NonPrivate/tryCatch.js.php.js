@@ -1,27 +1,39 @@
 var FooException_ = (function(parent) {
 	function FooException_() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 	}
 	__extends(FooException_, parent);
 	return FooException_;
 })(Exception);
 var Foo2Exception_ = (function(parent) {
 	function Foo2Exception_() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 	}
 	__extends(Foo2Exception_, parent);
 	return Foo2Exception_;
 })(FooException_);
 var BeeException_ = (function(parent) {
 	function BeeException_() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 	}
 	__extends(BeeException_, parent);
 	return BeeException_;
 })(Exception);
 var GooException_ = (function(parent) {
 	function GooException_() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 	}
 	__extends(GooException_, parent);
 	return GooException_;

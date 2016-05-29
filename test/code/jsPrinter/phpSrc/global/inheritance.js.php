@@ -19,8 +19,13 @@ class FooParent extends FooAbs
 {
     public $foo = 5;
 
-    function fooAbsFunc1($a, $b)
+    public function __construct() {
+		$this->foo=5;
+	}
+
+	function fooAbsFunc1($a, $b)
     {
+		parent::fooAbsFunc2(1,5);
         return $a + $b;
     }
 

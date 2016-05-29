@@ -24,7 +24,10 @@ N._INIT_('anonymusClass');
 	var b;
 	b = new(function(parent) {
 		function __anonymous__() {
-			parent.call(this /*constructor arguments*/ );
+			var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+			__IS_INHERITANCE__ = true;
+			parent.call(this);
+			__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 		}
 		__extends(__anonymous__, parent, arguments[1]);
 		return __anonymous__;
@@ -32,9 +35,14 @@ N._INIT_('anonymusClass');
 	var c;
 	c = new(function(parent, a) {
 		function __anonymous__(a) {
-			parent.call(this /*constructor arguments*/ );
+			var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+			__IS_INHERITANCE__ = true;
+			parent.call(this);
+			__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 			this.a = null;
-			this.__construct(a);
+			if (__IS_INHERITANCE__ == false) {
+				this.__construct(a);
+			}
 		}
 		__extends(__anonymous__, parent);
 		__anonymous__.prototype.__construct = function(a) {

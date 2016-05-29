@@ -535,7 +535,13 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         }else{
             $this->print_($node->name);
         }
+        if (count($node->class->parts)==1 && $node->class->parts[0]=="parent"){
+			$this->print_(".call");
+		}
         $this->print_('(');
+		if (count($node->class->parts)==1 && $node->class->parts[0]=="parent"){
+			$this->print_("this,");
+		}
         $this->pCommaSeparated($node->args);
         $this->print_(')');
     }
@@ -949,16 +955,23 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 		$this->println("){");
 		$this->indent();
 		if ($node->extends){
-			$this->println("parent.call(this %{Arguments});",'/*constructor arguments*/');
+			$this->println("var __OLD_IS_INHERITANCE__=__IS_INHERITANCE__;");
+			$this->println("__IS_INHERITANCE__=true;");
+			$this->println("parent.call(this);");
+			$this->println("__IS_INHERITANCE__=__OLD_IS_INHERITANCE__;");
 		}
 		if ($this->closureHelper->classIsInterface()){
 			$this->println('__INTERFACE_NEW__();');
 		}
 		$this->writeDelay($constructorBody);
 		if ($this->closureHelper->classHasConstructor()){
+			$this->println("if (__IS_INHERITANCE__==false){");
+			$this->indent();
 			$this->print_("this.__construct(");
 			$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());
 			$this->println(");");
+			$this->outdent();
+			$this->println("}");
 		}
 		$this->outdent()
 			->println("}")

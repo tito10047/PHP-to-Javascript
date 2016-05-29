@@ -21,11 +21,21 @@ var FooAbs = (function() {
 })(null, [FooInt]);
 var FooParent = (function(parent) {
 	function FooParent() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 		this.foo = 5;
+		if (__IS_INHERITANCE__ == false) {
+			this.__construct();
+		}
 	}
 	__extends(FooParent, parent);
+	FooParent.prototype.__construct = function() {
+		this.foo = 5;
+	};
 	FooParent.prototype.fooAbsFunc1 = function(a, b) {
+		parent.prototype.fooAbsFunc2.call(this, 1, 5);
 		return a + b;
 	};
 	FooParent.prototype.fooIntFunc1 = function(a, b) {
@@ -36,7 +46,10 @@ var FooParent = (function(parent) {
 })(FooAbs);
 var FooChild = (function(parent) {
 	function FooChild() {
-		parent.call(this /*constructor arguments*/ );
+		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		__IS_INHERITANCE__ = true;
+		parent.call(this);
+		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 		this.foo = 6;
 	}
 	__extends(FooChild, parent);
@@ -46,7 +59,7 @@ var FooChild = (function(parent) {
 	};
 	FooChild.prototype.testParent = function() {
 		assert_(this.fooIntFunc1(5, 5), 10, 'testParent 1');
-		assert_(parent.prototype.fooIntFunc1(5, 5), 15, 'testParent 2');
+		assert_(parent.prototype.fooIntFunc1.call(this, 5, 5), 15, 'testParent 2');
 	};
 	return FooChild;
 })(FooParent);

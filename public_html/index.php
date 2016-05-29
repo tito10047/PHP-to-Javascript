@@ -172,7 +172,7 @@ setcookie("converter",true);
                             "indent-char":"\\t",
                             "preserve-newlines":true,
                             "keep-array-indentation":false
-                        }).replaceAll("<","&lt;");
+                        }).replaceAll("<","&lt;").replace(/(^[ \t]*\n)/gm, "");
                         hljs.highlightBlock(document.getElementById("jsCode"));
                     }
                     else if(xmlhttp.status == 400) {

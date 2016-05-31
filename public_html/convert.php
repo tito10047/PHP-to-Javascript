@@ -18,11 +18,11 @@ require_once __DIR__."/../vendor/autoload.php";
 try{
 
     $parser        = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
-    $prettyPrinter = new \phptojs\JsPrinter\NonPrivate();
+    $jsPrinter = new \phptojs\JsPrinter\NonPrivate();
 
     $stmts = $parser->parse($code);
     ob_start();
-    $jsCode = $prettyPrinter->jsPrint($stmts);
+    $jsCode = $jsPrinter->jsPrint($stmts);
     $errors = ob_get_clean();
     $errors = explode(PHP_EOL,$errors);
     foreach ($errors as $error){
@@ -30,6 +30,9 @@ try{
             echo "//" . $error;
         }
         echo PHP_EOL;
+    }
+    foreach ($jsPrinter->getErrors() as $error){
+        echo "//" . $error.PHP_EOL;
     }
     echo $jsCode;
     

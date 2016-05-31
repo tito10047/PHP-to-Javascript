@@ -35,17 +35,25 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     protected $ROOT_PATH_TO_EXT=null;
     protected $isOnlyJsFile = false;
 
-    public static $showWarnings=true;
+	/**
+	 * @return array
+	 */
+	public function getErrors() {
+		return $this->errors;
+	}
+
     public static $throwErrors=true;
-    protected static function notImplemented($expression,$message, $throw=false){
+    protected $errors=[];
+    protected function notImplemented($expression,$message, $throw=false){
         if ($expression){
-            $msg = "not implemented ".$message.PHP_EOL;
+            $msg = "not implemented ".$message;
+			$this->errors[]=$msg;
             if ($throw){
-                if (self::$throwErrors==false)
-                    throw new \RuntimeException("not implemented ".$message);
+                if (self::$throwErrors==true) {
+					throw new \RuntimeException($msg);
+				}else{
+				}
             }
-            if (self::$showWarnings==false) return;
-            echo $msg;
         }
     }
 
@@ -390,7 +398,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
 
     public function pExpr_BinaryOp_Spaceship(BinaryOp\Spaceship $node) {
         //TODO: Implement pExpr_BinaryOp_Spaceship() method.
-        self::notImplemented(true, __METHOD__);
+        $this->notImplemented(true, __METHOD__);
     }
 
     public function pExpr_BinaryOp_Greater(BinaryOp\Greater $node) {
@@ -411,7 +419,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
 
     public function pExpr_BinaryOp_Coalesce(BinaryOp\Coalesce $node) {
         // TODO: Implement pExpr_BinaryOp_Coalesce() method.
-        self::notImplemented(true, __METHOD__);
+        $this->notImplemented(true, __METHOD__);
     }
 
     // Unary expressions
@@ -449,13 +457,13 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     public function pExpr_ErrorSuppress(Expr\ErrorSuppress $node) {//TODO: implement this
-        self::notImplemented(true,'ErrorSuppress by @',true);
+        $this->notImplemented(true,'ErrorSuppress by @',true);
         $this->pPrefixOp('Expr_ErrorSuppress', '@', $node->expr);
     }
 
     public function pExpr_YieldFrom(Expr\YieldFrom $node) {
         // TODO: Implement pExpr_YieldFrom() method.
-        self::notImplemented(true, __METHOD__);
+        $this->notImplemented(true, __METHOD__);
     }
 
     public function pExpr_Print(Expr\Print_ $node) {
@@ -486,12 +494,12 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     public function pExpr_Cast_Array(Cast\Array_ $node) {//TODO: implement this
-        self::notImplemented(true,' conversion to (array)',true);
+        $this->notImplemented(true,' conversion to (array)',true);
         $this->pPrefixOp('Expr_Cast_Array', '(array) ', $node->expr);
     }
 
     public function pExpr_Cast_Object(Cast\Object_ $node) {//TODO: implement this
-        self::notImplemented(true,' conversion to (object)',true);
+        $this->notImplemented(true,' conversion to (object)',true);
         $this->pPrefixOp('Expr_Cast_Object', '(object) ', $node->expr);
     }
 
@@ -500,7 +508,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     public function pExpr_Cast_Unset(Cast\Unset_ $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
         $this->pPrefixOp('Expr_Cast_Unset', 'delete ', $node->expr);
     }
 

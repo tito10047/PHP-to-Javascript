@@ -42,7 +42,6 @@ namespace PhpTpJs {
             $this->PATH_TO_JS_TEST = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}jsSrc{$s}runTest.js";
             $this->PATH_TO_PHP_TEST = __DIR__ . "{$s}..{$s}code{$s}jsPrinter{$s}phpSrc{$s}runTest.php";
             $this->phpGlobalFiles = self::getFiles($this->PATH_SRC_PHP . 'global', "js.php");
-            JsPrinterAbstract::$showWarnings = false;
             JsPrinterAbstract::$throwErrors = false;
             JsPrinterAbstract::$enableVariadic = true;
         }
@@ -68,6 +67,9 @@ namespace PhpTpJs {
             if (!$jsPrinter->jsPrintFileTo($filePath, $jsFilePath)) {
                 $this->throwException(new \Exception("cant write to '{$jsFilePath}'"));
             }
+			foreach ($jsPrinter->getErrors() as $error){
+				echo $error.PHP_EOL;
+			}
 
             if ($this->onlyGenerate) {
                 return;

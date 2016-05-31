@@ -276,7 +276,6 @@ class ClosureHelper{
 class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     private static function WTF($message='WTF',$node=null){
-        if (self::$showWarnings==false) return;
         var_dump($node);
         throw new Error($message);
     }
@@ -291,7 +290,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pParam(Node\Param $node) {
-        self::notImplemented($node->byRef,"reference param {$node->name} by & ");
+        $this->notImplemented($node->byRef,"reference param {$node->name} by & ");
         $this->closureHelper->useVar($node->name);
         if ($node->variadic && JsPrinterAbstract::$enableVariadic){
             $this->print_("...");       
@@ -354,8 +353,8 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pArg(Node\Arg $node) {//TODO: implement this
-        self::notImplemented($node->unpack,'unpacking argument by ...');
-        self::notImplemented($node->byRef, 'reference by &');
+        $this->notImplemented($node->unpack,'unpacking argument by ...');
+        $this->notImplemented($node->byRef, 'reference by &');
         $this->closureHelper->isDefScope(true);
         $this->p($node->value);
         $this->closureHelper->isDefScope(false);
@@ -398,12 +397,12 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_MagicConst_Dir(MagicConst\Dir $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
         return '__DIR__';
     }
 
     public function pScalar_MagicConst_File(MagicConst\File $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
         return '__FILE__';
     }
 
@@ -412,7 +411,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_MagicConst_Line(MagicConst\Line $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
         return '__LINE__';
     }
 
@@ -425,7 +424,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pScalar_MagicConst_Trait(MagicConst\Trait_ $node) {//TODO: implement this
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
         return '__TRAIT__';
     }
 
@@ -439,7 +438,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
         if ($node->getAttribute('kind') === Scalar\String_::KIND_HEREDOC) {
             $label = $node->getAttribute('docLabel');
             if ($label && !$this->encapsedContainsEndLabel($node->parts, $label)) {
-                self::notImplemented(true,"encapsed strig with <<<");
+                $this->notImplemented(true,"encapsed strig with <<<");
                 if (count($node->parts) === 1
                     && $node->parts[0] instanceof Scalar\EncapsedStringPart
                     && $node->parts[0]->value === ''
@@ -547,7 +546,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_Include(Expr\Include_ $node) {//TODO: implement this
-        self::notImplemented(true,' include and require');
+        $this->notImplemented(true,' include and require');
         static $map = array(
             Expr\Include_::TYPE_INCLUDE      => 'include',
             Expr\Include_::TYPE_INCLUDE_ONCE => 'include_once',
@@ -631,7 +630,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     public function pExpr_Variable(Expr\Variable $node) {//TODO: implement this
         $this->closureHelper->pushVar($node->name);
         if ($node->name instanceof Expr) {
-            self::notImplemented(true,"acces by \${name}");
+            $this->notImplemented(true,"acces by \${name}");
             //return '${' . $this->p($node->name) . '}';
             $this->print_($node->name);
         } else {
@@ -648,7 +647,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_ArrayItem(Expr\ArrayItem $node) {
-        self::notImplemented($node->byRef,' array value reference &');
+        $this->notImplemented($node->byRef,' array value reference &');
         if ($node->key!==null){
             $this->p($node->key);
         }else{
@@ -691,7 +690,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_ShellExec(Expr\ShellExec $node) {//TODO: implement this
-        self::notImplemented(true,"shell exec",true);
+        $this->notImplemented(true,"shell exec",true);
     }
 
     private $useByRef=null;
@@ -707,7 +706,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
 
     public function pExpr_Closure(Expr\Closure $node) {//TODO: implement this
-        self::notImplemented($node->byRef,"closure reference by &");
+        $this->notImplemented($node->byRef,"closure reference by &");
         if ($node->static){
             self::WTF();
             $this->print_('static');
@@ -781,7 +780,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_Clone(Expr\Clone_ $node) {//TODO: implement this
-        self::notImplemented(true,"cloning by clone");
+        $this->notImplemented(true,"cloning by clone");
     }
 
     public function pExpr_Ternary(Expr\Ternary $node) {//TODO: implement this
@@ -809,7 +808,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pExpr_Yield(Expr\Yield_ $node) {//TODO: implement this
-        self::notImplemented(true,"using yield",true);
+        $this->notImplemented(true,"using yield",true);
     }
 
     public function pStmt_Namespace(Stmt\Namespace_ $node) {//TODO: implement this
@@ -840,15 +839,15 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_GroupUse(Stmt\GroupUse $node) {//TODO:
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pStmt_UseUse(Stmt\UseUse $node) {//TODO::
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pUseType($type) {//TODO:
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pStmt_Interface(Stmt\Interface_ $node) {
@@ -866,8 +865,8 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Class(Stmt\Class_ $node) {//TODO: implement this
-        //self::notImplemented($node->extends,'extending class');
-        //self::notImplemented($node->implements,'implementng class');
+        //$this->notImplemented($node->extends,'extending class');
+        //$this->notImplemented($node->implements,'implementng class');
         //. (null !== $node->extends ? ' extends ' . $this->p($node->extends) : '')
         //. (!empty($node->implements) ? ' implements ' . $this->pCommaSeparated($node->implements) : '')
         //$this->indent();
@@ -1032,19 +1031,19 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Trait(Stmt\Trait_ $node) {//TODO: implement this
-        self::notImplemented(true,"tait",true);
+        $this->notImplemented(true,"tait",true);
     }
 
     public function pStmt_TraitUse(Stmt\TraitUse $node) {//TODO: implement this
-        self::notImplemented(true,"use tait",true);
+        $this->notImplemented(true,"use tait",true);
     }
 
     public function pStmt_TraitUseAdaptation_Precedence(Stmt\TraitUseAdaptation\Precedence $node) {//TODO: implement this
-        self::notImplemented(true,"pStmt_TraitUseAdaptation_Precedence",true);
+        $this->notImplemented(true,"pStmt_TraitUseAdaptation_Precedence",true);
     }
 
     public function pStmt_TraitUseAdaptation_Alias(Stmt\TraitUseAdaptation\Alias $node) {//TODO: implement this
-        self::notImplemented(true,"pStmt_TraitUseAdaptation_Alias",true);
+        $this->notImplemented(true,"pStmt_TraitUseAdaptation_Alias",true);
     }
 
     public function pStmt_Property(Stmt\Property $node) {//TODO: implement this
@@ -1059,7 +1058,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
             }
             return;
         }
-        self::notImplemented($node->type & Stmt\Class_::MODIFIER_PRIVATE, "private property");
+        $this->notImplemented($node->type & Stmt\Class_::MODIFIER_PRIVATE, "private property");
         foreach($node->props as $property){
             $this->print_("this.");
             $this->p($property);
@@ -1085,7 +1084,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 			}
             $this->closureHelper->pushVarScope();
 
-            self::notImplemented($node->byRef,'method return reference');
+            $this->notImplemented($node->byRef,'method return reference');
             //return //$this->pModifiers($node->type)
             $this->closureHelper->setMethodName($node->name);
             $this->print_($node->name);
@@ -1123,7 +1122,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pStmt_Function(Stmt\Function_ $node) {
         $this->closureHelper->pushVarScope();
-        self::notImplemented($node->byRef,"function return reference by function &$node->name(...");
+        $this->notImplemented($node->byRef,"function return reference by function &$node->name(...");
         $this->closureHelper->setFunctionName($node->name);
         if ($this->closureHelper->isNamespace()){
             $this->println("var %{name} = this.%{name} = function(",$node->name,$node->name);
@@ -1168,11 +1167,11 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Declare(Stmt\Declare_ $node) {
-        self::notImplemented(true,"declare()",true);
+        $this->notImplemented(true,"declare()",true);
     }
 
     public function pStmt_DeclareDeclare(Stmt\DeclareDeclare $node) {
-        self::notImplemented(true,"declare()",true);
+        $this->notImplemented(true,"declare()",true);
     }
 
     public function pStmt_If(Stmt\If_ $node) {
@@ -1238,7 +1237,7 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Foreach(Stmt\Foreach_ $node) {
-        self::notImplemented($node->byRef,"reference by & in foreach value");
+        $this->notImplemented($node->byRef,"reference by & in foreach value");
 
         $this->pushDelay();     //expression
         $this->p($node->expr);
@@ -1418,11 +1417,11 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Label(Stmt\Label $node) {//TODO: implement this
-        self::notImplemented(true,"labels:");
+        $this->notImplemented(true,"labels:");
     }
 
     public function pStmt_Goto(Stmt\Goto_ $node) {//TODO: implement this
-        self::notImplemented(true,'goto.',true);
+        $this->notImplemented(true,'goto.',true);
         //TODO: implement it. http://stackoverflow.com/questions/9751207/how-can-i-use-goto-in-javascript/23181432#23181432
     }
 
@@ -1433,15 +1432,15 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_Static(Stmt\Static_ $node) {//TODO: implement this
-        self::notImplemented(true," static variables",true);
+        $this->notImplemented(true," static variables",true);
     }
 
     public function pStmt_Global(Stmt\Global_ $node) {//TODO: implement this
-        self::notImplemented(true," global variables",true);
+        $this->notImplemented(true," global variables",true);
     }
 
     public function pStmt_StaticVar(Stmt\StaticVar $node) {//TODO: implement this
-        self::notImplemented(true,'static vars',true);
+        $this->notImplemented(true,'static vars',true);
     }
 
     public function pStmt_Unset(Stmt\Unset_ $node) {//TODO: implement this
@@ -1451,27 +1450,27 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
     }
 
     public function pStmt_InlineHTML(Stmt\InlineHTML $node) {//TODO: implement this
-        self::notImplemented(true,"InlineHTML",true);
+        $this->notImplemented(true,"InlineHTML",true);
         //return JS_SCRIPT_END . $this->pNoIndent("\n" . $node->value) . JS_SCRIPT_BEGIN;
     }
 
     public function pStmt_HaltCompiler(Stmt\HaltCompiler $node) {//TODO: implement this
-        self::notImplemented(true," __halt_compiler()",true);
+        $this->notImplemented(true," __halt_compiler()",true);
     }
 
     public function pStmt_Nop(Stmt\Nop $node) {
         // TODO: Implement pStmt_Nop() method.
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pType($node) {
         // TODO: Implement pType() method.
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pClassCommon(Stmt\Class_ $node, $afterClassToken) {
         // TODO: Implement pClassCommon() method.
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pObjectProperty($node) {//TODO: implement this
@@ -1515,12 +1514,12 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 
     public function pDereferenceLhs(Node $node) {
         // TODO: Implement pDereferenceLhs() method.
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
     public function pCallLhs(Node $node) {
         // TODO: Implement pCallLhs() method.
-        self::notImplemented(true,__METHOD__);
+        $this->notImplemented(true,__METHOD__);
     }
 
 

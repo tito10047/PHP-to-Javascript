@@ -1,6 +1,7 @@
 {
   "name": "mostka/phptojs",
-  "description": "Php to JS comventor",
+  "description": "Php to JS converter",
+  "keywords": ["converter"],
   "minimum-stability": "dev",
   "license": "MIT",
   "authors": [

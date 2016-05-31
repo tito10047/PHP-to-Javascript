@@ -5,17 +5,17 @@
  * Date: 26.5.2016
  * Time: 20:40
  */
-if (!isset($_COOKIE["converter"])){
-    return;
+if (!isset($_COOKIE["converter"])) {
+	return;
 }
-if (!@$_GET["template"]){
-    return;
+if (!@$_GET["template"]) {
+	return;
 }
 header("Content-Type: text/plain");
-$template=$_GET["template"];
-$files=glob(__DIR__."/../test/code/jsPrinter/phpSrc/*/{$template}.js.php");
-if (count($files)==0){
-    echo "1";
+$template = $_GET["template"];
+$files = glob(__DIR__ . "/../test/code/jsPrinter/phpSrc/*/{$template}.js.php");
+if (count($files) == 0) {
+	echo "1";
 }
-$file=$files[0];
+$file = $files[0];
 echo file_get_contents($file);

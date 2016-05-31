@@ -127,7 +127,7 @@ class ClosureHelper {
 		$this->_classHasConstructor = $data[9];
 		$this->classPrivatePropertiesNames = $data[10];
 		$this->classPrivateMethodsNames = $data[11];
-		$this->classPrivateMethods	= $data[12];
+		$this->classPrivateMethods = $data[12];
 		$this->isInsidePrivateMethod = $data[13];
 	}
 
@@ -150,10 +150,12 @@ class ClosureHelper {
 	public function getClassPrivateMethods() {
 		return $this->classPrivateMethods;
 	}
-	public function setIsInsidePrivateMethod($isOrNot){
-		$this->isInsidePrivateMethod=$isOrNot;
+
+	public function setIsInsidePrivateMethod($isOrNot) {
+		$this->isInsidePrivateMethod = $isOrNot;
 	}
-	public function isInsidePrivateMethod(){
+
+	public function isInsidePrivateMethod() {
 		return $this->isInsidePrivateMethod;
 	}
 
@@ -171,24 +173,31 @@ class ClosureHelper {
 	public function addClassConstants($classConstant) {
 		$this->classConstants = $classConstant;
 	}
-	public function addClassPrivatePropertyName($name){
-		$this->classPrivatePropertiesNames[]=$name;
+
+	public function addClassPrivatePropertyName($name) {
+		$this->classPrivatePropertiesNames[] = $name;
 	}
-	public function addClassPrivateMethodName($name){
-		$this->classPrivateMethodsNames[]=$name;
+
+	public function addClassPrivateMethodName($name) {
+		$this->classPrivateMethodsNames[] = $name;
 	}
-	public function addClassPrivateMethod($method){
-		$this->classPrivateMethods[]=$method;
+
+	public function addClassPrivateMethod($method) {
+		$this->classPrivateMethods[] = $method;
 	}
-	public function isClassPrivateProperty($name){
+
+	public function isClassPrivateProperty($name) {
 		return in_array($name, $this->classPrivatePropertiesNames);
 	}
-	public function isClassPrivateMethod($name){
+
+	public function isClassPrivateMethod($name) {
 		return in_array($name, $this->classPrivateMethodsNames);
 	}
-	public function hasClassPrivateMethodsOrProperties(){
-		return count($this->classPrivatePropertiesNames)>0 || count($this->classPrivateMethodsNames)>0;
+
+	public function hasClassPrivateMethodsOrProperties() {
+		return count($this->classPrivatePropertiesNames) > 0 || count($this->classPrivateMethodsNames) > 0;
 	}
+
 	/**
 	 * @param $classConstructorParams
 	 */
@@ -590,11 +599,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pExpr_MethodCall(Expr\MethodCall $node) {
-		if ($node->var instanceof Expr\Variable && $node->var->name=="this" && $this->closureHelper->isClassPrivateMethod($node->name)){
+		if ($node->var instanceof Expr\Variable && $node->var->name == "this" && $this->closureHelper->isClassPrivateMethod($node->name)) {
 			$this->print_("__private(");
 		}
 		$this->pVarOrNewExpr($node->var);
-		if ($node->var instanceof Expr\Variable && $node->var->name=="this" && $this->closureHelper->isClassPrivateMethod($node->name)){
+		if ($node->var instanceof Expr\Variable && $node->var->name == "this" && $this->closureHelper->isClassPrivateMethod($node->name)) {
 			$this->print_(")");
 		}
 		$this->print_('.');
@@ -624,7 +633,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->print_('(');
 		if (count($node->class->parts) == 1 && $node->class->parts[0] == "parent") {
 			$this->print_("this");
-			if (count($node->args)>0){
+			if (count($node->args) > 0) {
 				$this->print_(",");
 			}
 		}
@@ -721,9 +730,9 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			//return '${' . $this->p($node->name) . '}';
 			$this->print_($node->name);
 		} else {
-			if($node->name=="this" && $this->closureHelper->isInsidePrivateMethod()){
+			if ($node->name == "this" && $this->closureHelper->isInsidePrivateMethod()) {
 				$this->print_("__self");
-			}else{
+			} else {
 				$this->print_($node->name);
 			}
 		}
@@ -767,11 +776,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pExpr_PropertyFetch(Expr\PropertyFetch $node) {//TODO: implement this
-		if ($node->var instanceof Expr\Variable && $node->var->name=="this" && $this->closureHelper->isClassPrivateProperty($node->name)){
+		if ($node->var instanceof Expr\Variable && $node->var->name == "this" && $this->closureHelper->isClassPrivateProperty($node->name)) {
 			$this->print_("__private(");
 		}
 		$this->pVarOrNewExpr($node->var);
-		if ($node->var instanceof Expr\Variable && $node->var->name=="this" && $this->closureHelper->isClassPrivateProperty($node->name)){
+		if ($node->var instanceof Expr\Variable && $node->var->name == "this" && $this->closureHelper->isClassPrivateProperty($node->name)) {
 			$this->print_(")");
 		}
 		if (!($node->name instanceof Expr)) {
@@ -1066,7 +1075,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 		$this->writeDelay($constructorBody);
 
-		if (count($this->closureHelper->getClassPrivateMethods())>0){
+		if (count($this->closureHelper->getClassPrivateMethods()) > 0) {
 			$this->println("var __self=this;");
 		}
 		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
@@ -1114,7 +1123,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 
 		$this->println("){");
-		if ($this->closureHelper->hasClassPrivateMethodsOrProperties()){
+		if ($this->closureHelper->hasClassPrivateMethodsOrProperties()) {
 			$this->indentln("var __private = __PRIVATIZE__();");
 		}
 //		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
@@ -1176,12 +1185,12 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			return;
 		}
 		foreach ($node->props as $property) {
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE){
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
 				$this->closureHelper->addClassPrivatePropertyName($property->name);
 				$this->print_("__private(");
 			}
 			$this->print_("this");
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE){
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
 				$this->print_(")");
 			}
 			$this->print_(".");
@@ -1200,7 +1209,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	public function pStmt_ClassMethod(Stmt\ClassMethod $node, $force = false) {//TODO: implement this
 		if ($force) {
-			if (in_array($node->name, ["__get", "__set", "__call"])) { 
+			if (in_array($node->name, ["__get", "__set", "__call"])) {
 				$this->closureHelper->setClassHasMagicMethods();
 			}
 			if ($node->name == "__construct") {
@@ -1236,10 +1245,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->println("};");
 			$this->closureHelper->popVarScope();
 		} else {
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE){
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
 				$this->closureHelper->addClassPrivateMethodName($node->name);
 				$this->closureHelper->addClassPrivateMethod($node);
-			}else{
+			} else {
 				$this->closureHelper->addClassPublicMethod($node);
 			}
 		}

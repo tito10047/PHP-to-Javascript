@@ -13,14 +13,13 @@ PHP to JavaScript convertor
 - magic constants
 - list()
 - magic methods __get __set and __call (only in ES6 [see Proxy in compatibility table](https://kangax.github.io/compat-table/es6/#test-Proxy))
+- private methods and properties (only in ES6 [see WeakMap in compatibility table](https://kangax.github.io/compat-table/es6/#test-WeakMap))
 
 ####Planed####
 - include and require
 - rpc library
 - class generation
 
-####Not support now####
-- private functions and properties (its possible but required implement different design pattern.This I use is much faster)
 
 ####Not suport####
 - trait

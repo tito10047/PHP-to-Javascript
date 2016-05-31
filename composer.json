@@ -16,6 +16,7 @@
     }
   },
   "require": {
+    "php": "^5.3.3 || ^7.0",
     "nikic/php-parser": "dev-master"
   },
   "require-dev": {

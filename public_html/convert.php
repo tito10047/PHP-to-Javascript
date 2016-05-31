@@ -18,7 +18,7 @@ require_once __DIR__."/../vendor/autoload.php";
 try{
 
     $parser        = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
-    $jsPrinter = new \phptojs\JsPrinter\NonPrivate();
+    $jsPrinter = new \phptojs\JsPrinter\JsPrinter();
 
     $stmts = $parser->parse($code);
     ob_start();

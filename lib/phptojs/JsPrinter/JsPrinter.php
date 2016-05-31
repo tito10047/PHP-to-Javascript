@@ -350,7 +350,7 @@ class ClosureHelper {
 
 }
 
-class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface {
+class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	private static function WTF($message = 'WTF', $node = null) {
 		var_dump($node);

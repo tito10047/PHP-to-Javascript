@@ -531,7 +531,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
     /**
      * @param null $atStart
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function pushDelay($atStart=null) {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -540,7 +540,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
 
     /**
      * @param null $id
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function popDelay(&$id = null) {
         $this->writer->popDelay($id);
@@ -558,7 +558,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
 
     /**
      * @param $id
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function writeDelay($id) {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -566,7 +566,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     /**
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function writeLastDelay() {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -576,7 +576,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     /**
      * @param $string
      * @param ... $objects
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function println($string = '', $objects = null) {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -586,7 +586,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     /**
      * @param $string
      * @param ... $objects
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function print_($string, $objects = null) {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -594,7 +594,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     /**
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function indent() {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -602,7 +602,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     }
 
     /**
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function outdent() {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());
@@ -612,7 +612,7 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract{
     /**
      * @param $string
      * @param ... $objects
-     * @return NonPrivate
+     * @return JsPrinter
      */
     public function indentln($string, $objects = null) {
         call_user_func_array(array($this->writer,__FUNCTION__),func_get_args());

@@ -47,15 +47,15 @@ namespace PhpTpJs {
         }
 
         /**
-         * @dataProvider provideTestNonPrivate
+         * @dataProvider provideTestJsPrinter
          * @covers       phptojs\JsPrinter\<extended>
          */
-        public function testNonPrivate($class, $fileName, $filePath) {
+        public function testJsPrinter($class, $fileName, $filePath) {
             $this->doTestJsPrintClass($class, $fileName, $filePath);
         }
 
-        public function provideTestNonPrivate() {
-            return $this->getTests("NonPrivate");
+        public function provideTestJsPrinter() {
+            return $this->getTests("JsPrinter");
         }
 
         protected function doTestJsPrintClass($printerClassName, $fileName, $filePath) {

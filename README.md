@@ -30,7 +30,7 @@ PHP to JavaScript convertor
 #### Usage####
 ```php
     $parser = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
-    $jsPrinter = new \phptojs\JsPrinter\NonPrivate();
+    $jsPrinter = new \phptojs\JsPrinter\JsPrinter();
 
     $phpCode = file_get_contents('path/to/phpCode');
     $stmts = $parser->parse($phpCode);

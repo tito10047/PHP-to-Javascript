@@ -9,26 +9,35 @@ namespace privateTest;
 
 class ParentClass{
 	private $privateParent="privateParent";
-	public $publicParent="publicParent";
+	public $publicChildren="publicParent";
 	
 	private function getPrivateFunc(){
-		
+		return $this->privateParent;
 	}
 	
 	public function getPublicFunc(){
-		
+		return $this->getPrivateFunc();
 	}
 }
 
 class Children extends ParentClass{
-	private $privateParent="privateParent";
-	public $publicParent="publicParent";
+	private $privateChildren="privateChildren";
+	public $publicChildren="publicChildren";
 
 	private function getPrivateFunc(){
-
+		return $this->publicChildren;
 	}
 
 	public function getPublicFunc(){
+		return $this->privateChildren;
+	}
 
+	public function testParentPublicFunc(){
+		return parent::getPublicFunc();
 	}
 }
+
+$children = new Children();
+
+//assert_($children->testParentPublicFunc(),"privateParent","testParentPublicFunc");
+assert_($children->getPublicFunc(),"privateChildren","getPublicFunc");

@@ -38,18 +38,20 @@ N._INIT_('anonymusClass');
 	})(AAA, [BBB, CCC]);
 	var c;
 	c = new(function(parent, a) {
+		var __private = __PRIVATIZE__();
+
 		function __anonymous__(a) {
 			var __isInheritance = __IS_INHERITANCE__;
 			__IS_INHERITANCE__ = true;
 			parent.call(this);
-			this.a = null;
+			__private(this).a = null;
 			if (__isInheritance == false) {
 				this.__construct(a);
 			}
 		}
 		__extends(__anonymous__, parent);
 		__anonymous__.prototype.__construct = function(a) {
-			this.a = a;
+			__private(this).a = a;
 		};
 		return __anonymous__;
 	})(AAA, a);

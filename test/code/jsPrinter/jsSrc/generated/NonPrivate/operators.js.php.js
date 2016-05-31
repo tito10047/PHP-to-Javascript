@@ -5,7 +5,9 @@ b = 1;
 var c;
 c = 2;
 var Foo = (function() {
-	function Foo() {}
+	function Foo() {
+		__IS_INHERITANCE__ = false;
+	}
 	return Foo;
 })();
 ++a;

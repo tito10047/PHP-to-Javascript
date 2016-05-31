@@ -1,5 +1,6 @@
 var FooInt = (function() {
 	function FooInt() {
+		__IS_INHERITANCE__ = false;
 		__INTERFACE_NEW__();
 	}
 	FooInt.prototype.fooIntFunc1 = function(a, b) {
@@ -8,7 +9,9 @@ var FooInt = (function() {
 	return FooInt;
 })();
 var FooAbs = (function() {
-	function FooAbs() {}
+	function FooAbs() {
+		__IS_INHERITANCE__ = false;
+	}
 	__extends(FooAbs, null, arguments[1]);
 	FooAbs.prototype.__isAbstract__ = true;
 	FooAbs.prototype.fooAbsFunc1 = function(a, b) {
@@ -21,12 +24,11 @@ var FooAbs = (function() {
 })(null, [FooInt]);
 var FooParent = (function(parent) {
 	function FooParent() {
-		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
+		var __isInheritance = __IS_INHERITANCE__;
 		__IS_INHERITANCE__ = true;
 		parent.call(this);
-		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 		this.foo = 5;
-		if (__IS_INHERITANCE__ == false) {
+		if (__isInheritance == false) {
 			this.__construct();
 		}
 	}
@@ -46,10 +48,8 @@ var FooParent = (function(parent) {
 })(FooAbs);
 var FooChild = (function(parent) {
 	function FooChild() {
-		var __OLD_IS_INHERITANCE__ = __IS_INHERITANCE__;
 		__IS_INHERITANCE__ = true;
 		parent.call(this);
-		__IS_INHERITANCE__ = __OLD_IS_INHERITANCE__;
 		this.foo = 6;
 	}
 	__extends(FooChild, parent);

@@ -1,14 +1,18 @@
 N._INIT_('fooFunctions');
 (function() {
 	var B = this.B = (function() {
-		function B() {}
+		function B() {
+			__IS_INHERITANCE__ = false;
+		}
 		return B;
 	})();
 }).call(N.fooFunctions);
 N._INIT_('functions');
 (function() {
 	var A = this.A = (function() {
-		function A() {}
+		function A() {
+			__IS_INHERITANCE__ = false;
+		}
 		A.prototype.f1 = function() {};
 		A.prototype.f2 = function(a, b) {};
 		A.prototype.f4 = function(a) {

@@ -954,18 +954,21 @@ class NonPrivate extends JsPrinterAbstract implements JsPrinterInterface{
 		}
 		$this->println("){");
 		$this->indent();
+        if ($this->closureHelper->classHasConstructor()){
+            $this->println("var __isInheritance=__IS_INHERITANCE__;");
+        }
 		if ($node->extends){
-			$this->println("var __OLD_IS_INHERITANCE__=__IS_INHERITANCE__;");
 			$this->println("__IS_INHERITANCE__=true;");
 			$this->println("parent.call(this);");
-			$this->println("__IS_INHERITANCE__=__OLD_IS_INHERITANCE__;");
-		}
+		}else{
+            $this->println("__IS_INHERITANCE__=false;");
+        }
 		if ($this->closureHelper->classIsInterface()){
 			$this->println('__INTERFACE_NEW__();');
 		}
 		$this->writeDelay($constructorBody);
 		if ($this->closureHelper->classHasConstructor()){
-			$this->println("if (__IS_INHERITANCE__==false){");
+			$this->println("if (__isInheritance==false){");
 			$this->indent();
 			$this->print_("this.__construct(");
 			$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());

@@ -6,6 +6,7 @@ N._INIT_('AAA');
 	assert_(FOO, 2);
 	var FooCls = this.FooCls = (function() {
 		function FooCls() {
+			__IS_INHERITANCE__ = false;
 			this.foo2 = null;
 		}
 		FooCls.foo = 4;

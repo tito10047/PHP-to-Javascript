@@ -1,5 +1,7 @@
 var Foo = (function() {
-	function Foo() {}
+	function Foo() {
+		__IS_INHERITANCE__ = false;
+	}
 	Foo.prototype.getClassName = function() {
 		return 'Foo';
 	};
@@ -20,7 +22,9 @@ assert_(getFunctionName(), 'getFunctionName', '__FUNCTION__');
 N._INIT_('testMagicConstants');
 (function() {
 	var Foo = this.Foo = (function() {
-		function Foo() {}
+		function Foo() {
+			__IS_INHERITANCE__ = false;
+		}
 		Foo.prototype.getClassName = function() {
 			return 'testMagicConstants\\Foo';
 		};

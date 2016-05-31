@@ -12,8 +12,10 @@ N._INIT_('testMagicMethods');
 	 */
 	var Foo = this.Foo = (function() {
 		function Foo(test) {
+			var __isInheritance = __IS_INHERITANCE__;
+			__IS_INHERITANCE__ = false;
 			this._test = null;
-			if (__IS_INHERITANCE__ == false) {
+			if (__isInheritance == false) {
 				this.__construct(test);
 			}
 		}

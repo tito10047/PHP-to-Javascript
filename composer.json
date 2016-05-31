@@ -1,6 +1,6 @@
 {
   "name": "mostka/phptojs",
-  "description": "Php to JS converter",
+  "description": "Php to JS converter convert PHP code into JavaScript. Support Classes, namespaces, inheritance and more. ",
   "keywords": ["converter"],
   "minimum-stability": "dev",
   "license": "MIT",

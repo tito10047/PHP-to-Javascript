@@ -65,8 +65,8 @@ global.include = function (path) {
 global.FALSE = false;
 
 
-include_("../../../../lib/PhpJs/classManager.js");
-include_("../../../../lib/PhpJs/HashArray.js");
+include_("../../../../lib/phptojs/lib/js/classManager.js");
+include_("../../../../lib/phptojs/lib/js/HashArray.js");
 
 var content = fs.readFileSync(process.argv[2]);
 content = beautify(content + '', {

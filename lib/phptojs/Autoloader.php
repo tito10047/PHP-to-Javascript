@@ -36,7 +36,12 @@ class Autoloader {
 	 */
 	static public function autoload($class) {
 		if (0 === strpos($class, 'phptojs\\')) {
-			$fileName = __DIR__ . strtr(substr($class, 9), '\\', '/') . '.php';
+			$fileName = __DIR__ . strtr(substr($class, 7), '\\', '/') . '.php';
+			if (file_exists($fileName)) {
+				require $fileName;
+			}
+		}elseif (0 === strpos($class, 'jsphp\\')) {
+			$fileName = __DIR__ ."/lib/php" . strtr(substr($class, 5), '\\', '/') . '.php';
 			if (file_exists($fileName)) {
 				require $fileName;
 			}

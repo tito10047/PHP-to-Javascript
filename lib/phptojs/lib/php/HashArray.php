@@ -6,7 +6,7 @@
  * Time: 22:47
  */
 
-namespace PhpJs;
+namespace jsphp;
 
 
 class HashArray implements \ArrayAccess, \Iterator, \Countable {

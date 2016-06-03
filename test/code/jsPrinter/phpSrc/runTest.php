@@ -23,7 +23,7 @@ function assert_($what, $to, $message = "no message") {
 }
 
 ;
-include __DIR__ . "/../../../../lib/PhpJs/HashArray.php";
+include __DIR__ . "/../../../../lib/phptojs/lib/php/HashArray.php";
 
 try {
 	include $argv[1];

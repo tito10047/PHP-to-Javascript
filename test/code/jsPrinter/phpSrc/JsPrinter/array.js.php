@@ -4,7 +4,7 @@ $a = array();
 assert_(count($a), 0, "array count 0");
 
 // Hash test
-$a = new \PhpJs\HashArray();
+$a = new \jsphp\HashArray();
 $a->set("dKey", "item0");
 $a->push('item1');
 $a->set("3", 'item2');

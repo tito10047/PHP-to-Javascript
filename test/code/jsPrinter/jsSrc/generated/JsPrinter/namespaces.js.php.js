@@ -34,6 +34,9 @@ N._INIT_('AAA.BBB.CCC');
 (function() {
 	var CCCFOO = 46;
 	this.CCCFOO = CCCFOO;
+	var testNamespaceFunc = this.testNamespaceFunc = function() {
+		return 465;
+	};
 }).call(N.AAA.BBB.CCC);
 var PPP = N.AAA.BBB.CCC;
 assert_(FOO, 1);
@@ -47,3 +50,4 @@ foo = new N.AAA.FooCls();
 foo.foo2 = 6;
 assert_(foo.foo2, 6, 'foo2');
 assert_(foo.fooFunc(), 6, 'fooFunc');
+assert_(PPP.testNamespaceFunc(), 465, 'testNamespaceFunc');

@@ -36,6 +36,10 @@ namespace AAA\BBB {
 
 namespace AAA\BBB\CCC {
     const CCCFOO = 46;
+
+    function testNamespaceFunc(){
+    	return 465;
+	}
 }
 
 namespace {
@@ -54,4 +58,6 @@ namespace {
     $foo->foo2 = 6;
     assert_($foo->foo2, 6, 'foo2');
     assert_($foo->fooFunc(), 6, 'fooFunc');
+
+	assert_(PPP\testNamespaceFunc(),465,"testNamespaceFunc");
 }

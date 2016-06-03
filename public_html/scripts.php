@@ -8,15 +8,15 @@
 header('Content-Type: application/javascript');
 echo "//classManager.js";
 echo PHP_EOL;
-echo file_get_contents(__DIR__ . "/../lib/PhpJs/classManager.js");
+echo file_get_contents(__DIR__ . "/../lib/phptojs/lib/js/classManager.js");
 echo PHP_EOL;
 echo "//Exceptions.js";
 echo PHP_EOL;
-echo file_get_contents(__DIR__ . "/../lib/PhpJs/Exceptions.js");
+echo file_get_contents(__DIR__ . "/../lib/phptojs/lib/js/Exceptions.js");
 echo PHP_EOL;
 echo "//HashArray.js";
 echo PHP_EOL;
-echo file_get_contents(__DIR__ . "/../lib/PhpJs/HashArray.js");
+echo file_get_contents(__DIR__ . "/../lib/phptojs/lib/js/HashArray.js");
 echo PHP_EOL;
 echo "//runTest.js" . PHP_EOL;
 echo "

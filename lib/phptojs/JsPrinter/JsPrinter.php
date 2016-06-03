@@ -919,9 +919,31 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->notImplemented(true, "using yield", true);
 	}
 
+	/**
+	 * @param null|Node\Name $node
+	 * @param $pos
+	 */
+	private function printNamespaceVar($node,$pos=0){
+		if ($node===null){
+			return;
+		}
+		if ($pos==0){
+			$this->print_("/** @var {{");
+		}
+		$this->print_("%{name}: {",$node->parts[$pos]);
+		if (count($node->parts)>$pos+1) {
+			$this->printNamespaceVar($node, $pos + 1);
+		}
+		$this->print_("}");
+		if ($pos==0){
+			$this->println("}} N*/");
+		}
+	}
+
 	public function pStmt_Namespace(Stmt\Namespace_ $node) {//TODO: implement this
 		if ($node->name !== null) {
 			$this->closureHelper->setNamespace(true, $node->name);
+			$this->printNamespaceVar($node->name);
 			$this->print_("N._INIT_('");
 			$this->p($node->name);
 			$this->println("');")

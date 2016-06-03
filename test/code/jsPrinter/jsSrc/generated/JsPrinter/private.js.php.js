@@ -4,6 +4,7 @@
  * Date: 31.5.2016
  * Time: 15:50
  */
+/** @var {{privateTest: {}}} N*/
 N._INIT_('privateTest');
 (function() {
 	var ParentClass = this.ParentClass = (function() {
@@ -13,7 +14,7 @@ N._INIT_('privateTest');
 		};
 
 		function ParentClass() {
-			__IS_INHERITANCE__ = false;
+			window.__IS_INHERITANCE__ = false;
 			__private(this).privateParent = 'privateParent';
 			this.publicParent = 'publicParent';
 			__private(this).overridePrivateParent = 'overridePrivateParent';

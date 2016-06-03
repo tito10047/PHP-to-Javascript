@@ -1,3 +1,4 @@
+/** @var {{test: {}}} N*/
 N._INIT_('test');
 (function() {
 	var Foo = this.Foo = (function() {

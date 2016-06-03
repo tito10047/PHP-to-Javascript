@@ -1,3 +1,4 @@
+/** @var {{fooFunctions: {}}} N*/
 N._INIT_('fooFunctions');
 (function() {
 	var B = this.B = (function() {
@@ -7,6 +8,7 @@ N._INIT_('fooFunctions');
 		return B;
 	})();
 }).call(N.fooFunctions);
+/** @var {{functions: {}}} N*/
 N._INIT_('functions');
 (function() {
 	var A = this.A = (function() {

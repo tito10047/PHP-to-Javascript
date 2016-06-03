@@ -1,3 +1,4 @@
+/** @var {{anonymusClass: {}}} N*/
 N._INIT_('anonymusClass');
 (function() {
 	var AAA = this.AAA = (function() {

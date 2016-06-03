@@ -19,6 +19,7 @@ foo = new Foo();
 assert_(foo.getClassName(), 'Foo', '__CLASS__');
 assert_(foo.getMethodName(), 'Foo::getMethodName', '__METHOS__');
 assert_(getFunctionName(), 'getFunctionName', '__FUNCTION__');
+/** @var {{testMagicConstants: {}}} N*/
 N._INIT_('testMagicConstants');
 (function() {
 	var Foo = this.Foo = (function() {

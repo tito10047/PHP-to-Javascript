@@ -1,4 +1,5 @@
 window.FOO = 1;
+/** @var {{AAA: {}}} N*/
 N._INIT_('AAA');
 (function() {
 	var FOO = 2;
@@ -24,12 +25,14 @@ N._INIT_('AAA');
 	assert_(FooCls.foo, 4);
 	assert_(FooCls.fooStatic(), 10);
 }).call(N.AAA);
+/** @var {{AAA: {BBB: {}}}} N*/
 N._INIT_('AAA.BBB');
 (function() {
 	var FOO = 3;
 	this.FOO = FOO;
 	assert_(FOO, 3);
 }).call(N.AAA.BBB);
+/** @var {{AAA: {BBB: {CCC: {}}}}} N*/
 N._INIT_('AAA.BBB.CCC');
 (function() {
 	var CCCFOO = 46;

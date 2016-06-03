@@ -4,6 +4,7 @@
  * Date: 29.5.2016
  * Time: 9:54
  */
+/** @var {{testMagicMethods: {}}} N*/
 N._INIT_('testMagicMethods');
 (function() {
 	/**

@@ -1653,7 +1653,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 				//$str .= addcslashes($element, "\n\r\t\f\v$" . $quote . "\\");
 			} else {
 				if ($element instanceof Scalar\EncapsedStringPart) {
-					$this->print_("\\n\\\n");
+					if ($element->value==PHP_EOL){
+						$this->print_("\\n\\\n");
+					}else {
+						$this->print_($element->value);
+					}
 					continue;
 				}
 				$this->print_('"+');

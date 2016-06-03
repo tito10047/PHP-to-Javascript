@@ -13,3 +13,6 @@ assert_($variableString, "5
 $multiLineString = "This is a string
 That spans two lines";
 
+$testInlineString="test JsClas indexed values index {$value2}";
+
+assert_($testInlineString,"test JsClas indexed values index 10");

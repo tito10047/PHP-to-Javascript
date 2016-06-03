@@ -10,3 +10,6 @@ assert_(variableString, '5\n\
 var multiLineString;
 multiLineString = 'This is a string\n\
 That spans two lines';
+var testInlineString;
+testInlineString = "test JsClas indexed values index " + value2 + "";
+assert_(testInlineString, 'test JsClas indexed values index 10');

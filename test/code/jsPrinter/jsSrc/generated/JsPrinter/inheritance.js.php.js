@@ -44,6 +44,9 @@ var FooParent = (function(parent) {
 		if (typeof b == 'undefined') b = 5;
 		return a + b + 5;
 	};
+	FooParent.fooStatic = function() {
+		return 10;
+	};
 	return FooParent;
 })(FooAbs);
 var FooChild = (function(parent) {
@@ -73,4 +76,5 @@ assert_(fooChild instanceof FooChild, true, 'fooChild instanceof FooChild');
 assert_(fooChild instanceof FooParent, true, 'fooChild instanceof FooParent');
 assert_(fooChild instanceof FooAbs, true, 'fooChild instanceof FooAbs');
 assert_(fooChild instanceof FooInt, true, 'fooChild instanceof FooInt');
+assert_(FooChild.fooStatic(), 10, 'FooChild::fooStatic()');
 fooChild.testParent();

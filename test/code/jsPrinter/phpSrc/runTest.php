@@ -1,6 +1,15 @@
 <?php
 ob_start();
+define("undefined", PHP_INT_MAX-3);
 
+class console{
+	/**
+	 * @param mixed ...
+	 */
+	public static function log(){
+		echo join(" ",func_get_args()).PHP_EOL;
+	}
+}
 
 function sendError($message, $errno = null, $errfile = null, $errline = null) {
 	echo json_encode(array('error' => $message, $errno, $errfile, $errline));
@@ -24,6 +33,7 @@ function assert_($what, $to, $message = "no message") {
 
 ;
 include __DIR__ . "/../../../../lib/phptojs/lib/php/HashArray.php";
+include __DIR__ . "/../../../../lib/phptojs/lib/php/JsObject.php";
 
 try {
 	include $argv[1];

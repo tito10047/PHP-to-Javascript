@@ -79,15 +79,15 @@ namespace PhpTpJs {
 
 			$phpAsserts = $this->runPhpTest($filePath);
 			foreach ($phpAsserts as $assert) {
-				$this->assertEquals($assert->what, $assert->to, $fileName . ": " . $assert->message);
+				$this->assertEquals($assert->to, $assert->what, $fileName . ": " . $assert->message);
 			}
 
 			$jsAsserts = $this->runJsTest($jsFilePath);
 			foreach ($jsAsserts as $assert) {
-				$this->assertEquals($assert->what, $assert->to, $fileName . ".js: " . $assert->message);
+				$this->assertEquals($assert->to, $assert->what, $fileName . ".js: " . $assert->message);
 			}
 
-			$this->assertEquals(count($phpAsserts), count($jsAsserts), "php VS js assertions count '{$fileName}'");
+			$this->assertEquals(count($phpAsserts), count($jsAsserts), "php VS js assertions count '{$fileName}'. JS:".count($jsAsserts)." vs PHP:".count($phpAsserts));
 
 			for ($i = 0; $i < count($phpAsserts); $i++) {
 				$this->assertEquals($phpAsserts[$i]->to, $jsAsserts[$i]->to, "php VS js '{$fileName}' '{$phpAsserts[$i]->message}'/{$jsAsserts[$i]->message}");

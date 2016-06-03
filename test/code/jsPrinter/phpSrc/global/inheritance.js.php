@@ -33,6 +33,10 @@ class FooParent extends FooAbs
     {
         return $a + $b + 5;
     }
+
+    public static function fooStatic(){
+    	return 10;
+	}
 }
 
 class FooChild extends FooParent
@@ -61,5 +65,7 @@ assert_($fooChild instanceof FooChild, true, 'fooChild instanceof FooChild');
 assert_($fooChild instanceof FooParent, true, 'fooChild instanceof FooParent');
 assert_($fooChild instanceof FooAbs, true, 'fooChild instanceof FooAbs');
 assert_($fooChild instanceof FooInt, true, 'fooChild instanceof FooInt');
+
+assert_(FooChild::fooStatic(),10, "FooChild::fooStatic()");
 
 $fooChild->testParent();

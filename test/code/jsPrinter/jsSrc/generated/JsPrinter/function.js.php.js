@@ -3,7 +3,7 @@ N._INIT_('fooFunctions');
 (function() {
 	var B = this.B = (function() {
 		function B() {
-			__IS_INHERITANCE__ = false;
+			window.__IS_INHERITANCE__ = false;
 		}
 		return B;
 	})();
@@ -13,7 +13,7 @@ N._INIT_('functions');
 (function() {
 	var A = this.A = (function() {
 		function A() {
-			__IS_INHERITANCE__ = false;
+			window.__IS_INHERITANCE__ = false;
 		}
 		A.prototype.f1 = function() {};
 		A.prototype.f2 = function(a, b) {};

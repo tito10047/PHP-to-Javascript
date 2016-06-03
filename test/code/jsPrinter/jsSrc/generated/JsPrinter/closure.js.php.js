@@ -29,7 +29,7 @@ testAnonymusFunc = 5;
 assert_(testAnonymusFunc, 6, 'testAnonymusFunc');
 var Foo = (function() {
 	function Foo() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 	}
 	Foo.prototype.foo1 = function() {
 		var a;

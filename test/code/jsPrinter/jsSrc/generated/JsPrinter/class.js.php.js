@@ -3,7 +3,7 @@ N._INIT_('test');
 (function() {
 	var Foo = this.Foo = (function() {
 		function Foo() {
-			__IS_INHERITANCE__ = false;
+			window.__IS_INHERITANCE__ = false;
 		}
 		Foo.prototype.test = function() {
 			return 6;
@@ -13,7 +13,7 @@ N._INIT_('test');
 }).call(N.test);
 var Foo = (function() {
 	function Foo() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 		this.publicVar = 'publicVar';
 	}
 	Foo.publicStaticVar = 'publicStaticVar';

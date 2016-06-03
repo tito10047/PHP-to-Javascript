@@ -38,7 +38,7 @@ N._INIT_('privateTest');
 		};
 
 		function Children() {
-			__IS_INHERITANCE__ = true;
+			window.__IS_INHERITANCE__ = true;
 			parent.call(this);
 			__private(this).privateChildren = 'privateChildren';
 			this.publicChildren = 'publicChildren';

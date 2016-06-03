@@ -3,7 +3,7 @@ function paramTest(object, otherVar) {
 }
 var TestClass = (function() {
 	function TestClass() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 		this.five = 5;
 	}
 	TestClass.prototype.getThis = function() {

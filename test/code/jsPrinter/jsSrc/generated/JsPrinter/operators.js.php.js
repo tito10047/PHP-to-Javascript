@@ -6,7 +6,7 @@ var c;
 c = 2;
 var Foo = (function() {
 	function Foo() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 	}
 	return Foo;
 })();

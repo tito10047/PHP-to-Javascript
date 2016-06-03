@@ -1,6 +1,6 @@
 var FooException_ = (function(parent) {
 	function FooException_() {
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 	}
 	__extends(FooException_, parent);
@@ -8,7 +8,7 @@ var FooException_ = (function(parent) {
 })(Exception);
 var Foo2Exception_ = (function(parent) {
 	function Foo2Exception_() {
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 	}
 	__extends(Foo2Exception_, parent);
@@ -16,7 +16,7 @@ var Foo2Exception_ = (function(parent) {
 })(FooException_);
 var BeeException_ = (function(parent) {
 	function BeeException_() {
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 	}
 	__extends(BeeException_, parent);
@@ -24,7 +24,7 @@ var BeeException_ = (function(parent) {
 })(Exception);
 var GooException_ = (function(parent) {
 	function GooException_() {
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 	}
 	__extends(GooException_, parent);

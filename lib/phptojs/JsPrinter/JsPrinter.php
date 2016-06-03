@@ -1084,10 +1084,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->println("var __isInheritance=__IS_INHERITANCE__;");
 		}
 		if ($node->extends) {
-			$this->println("__IS_INHERITANCE__=true;");
+			$this->println("window.__IS_INHERITANCE__=true;");
 			$this->println("parent.call(this);");
 		} else {
-			$this->println("__IS_INHERITANCE__=false;");
+			$this->println("window.__IS_INHERITANCE__=false;");
 		}
 		if ($this->closureHelper->classIsInterface()) {
 			$this->println('__INTERFACE_NEW__();');

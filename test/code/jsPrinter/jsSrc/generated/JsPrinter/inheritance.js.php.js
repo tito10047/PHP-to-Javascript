@@ -1,6 +1,6 @@
 var FooInt = (function() {
 	function FooInt() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 		__INTERFACE_NEW__();
 	}
 	FooInt.prototype.fooIntFunc1 = function(a, b) {
@@ -10,7 +10,7 @@ var FooInt = (function() {
 })();
 var FooAbs = (function() {
 	function FooAbs() {
-		__IS_INHERITANCE__ = false;
+		window.__IS_INHERITANCE__ = false;
 	}
 	__extends(FooAbs, null, arguments[1]);
 	FooAbs.prototype.__isAbstract__ = true;
@@ -25,7 +25,7 @@ var FooAbs = (function() {
 var FooParent = (function(parent) {
 	function FooParent() {
 		var __isInheritance = __IS_INHERITANCE__;
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 		this.foo = 5;
 		if (__isInheritance == false) {
@@ -48,7 +48,7 @@ var FooParent = (function(parent) {
 })(FooAbs);
 var FooChild = (function(parent) {
 	function FooChild() {
-		__IS_INHERITANCE__ = true;
+		window.__IS_INHERITANCE__ = true;
 		parent.call(this);
 		this.foo = 6;
 	}

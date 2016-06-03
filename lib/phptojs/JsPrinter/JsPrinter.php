@@ -608,7 +608,14 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 		$this->print_('.');
 		$this->pObjectProperty($node->name);
-		$this->print_('(');
+		if ($node->var instanceof Expr\Variable && $node->var->name == "this" && $this->closureHelper->isClassPrivateMethod($node->name)) {
+			$this->print_(".call(this");
+			if (count($node->args)>0){
+				$this->print_(",");
+			}
+		}else {
+			$this->print_('(');
+		}
 		$this->pCommaSeparated($node->args);
 		$this->print_(')');
 	}
@@ -727,14 +734,9 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->closureHelper->pushVar($node->name);
 		if ($node->name instanceof Expr) {
 			$this->notImplemented(true, "acces by \${name}");
-			//return '${' . $this->p($node->name) . '}';
 			$this->print_($node->name);
 		} else {
-			if ($node->name == "this" && $this->closureHelper->isInsidePrivateMethod()) {
-				$this->print_("__self");
-			} else {
-				$this->print_($node->name);
-			}
+			$this->print_($node->name);
 		}
 	}
 
@@ -971,12 +973,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_Class(Stmt\Class_ $node) {//TODO: implement this
-		//$this->notImplemented($node->extends,'extending class');
-		//$this->notImplemented($node->implements,'implementng class');
-		//. (null !== $node->extends ? ' extends ' . $this->p($node->extends) : '')
-		//. (!empty($node->implements) ? ' implements ' . $this->pCommaSeparated($node->implements) : '')
-		//$this->indent();
-
+		
 		if ($node->name != null) {
 			$className = $node->name;
 		} else {
@@ -1075,15 +1072,9 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 		$this->writeDelay($constructorBody);
 
-		if (count($this->closureHelper->getClassPrivateMethods()) > 0) {
-			$this->println("var __self=this;");
-		}
 		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
-			$this->closureHelper->setIsInsidePrivateMethod(true);
 			/** @var Stmt\ClassMethod $method */
-			$this->print_("__private(this).");
-			$this->pStmt_ClassMethod($method, true);
-			$this->closureHelper->setIsInsidePrivateMethod(false);
+			$this->println("__private(this).%{methodName}=__%{methodName};",$method->name,$method->name);
 		}
 		if ($this->closureHelper->classHasConstructor()) {
 			$this->println("if (__isInheritance==false){");
@@ -1126,11 +1117,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		if ($this->closureHelper->hasClassPrivateMethodsOrProperties()) {
 			$this->indentln("var __private = __PRIVATIZE__();");
 		}
-//		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
-//			/** @var Stmt\ClassMethod $method */
-//			$this->print_("var __");
-//			$this->pStmt_ClassMethod($method, true);
-//		}
+		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
+			/** @var Stmt\ClassMethod $method */
+			$this->print_("var __");
+			$this->pStmt_ClassMethod($method, true);
+		}
 		$this->writeDelay($classBody);
 		$this->writeDelay($methodsAndOthers);
 

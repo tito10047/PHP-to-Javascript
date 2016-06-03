@@ -8,19 +8,19 @@ N._INIT_('privateTest');
 (function() {
 	var ParentClass = this.ParentClass = (function() {
 		var __private = __PRIVATIZE__();
+		var __getPrivateFunc = function() {
+			return __private(this).privateParent;
+		};
 
 		function ParentClass() {
 			__IS_INHERITANCE__ = false;
 			__private(this).privateParent = 'privateParent';
 			this.publicParent = 'publicParent';
 			__private(this).overridePrivateParent = 'overridePrivateParent';
-			var __self = this;
-			__private(this).getPrivateFunc = function() {
-				return __private(__self).privateParent;
-			};
+			__private(this).getPrivateFunc = __getPrivateFunc;
 		}
 		ParentClass.prototype.getPublicFuncGetPrivate = function() {
-			return __private(this).getPrivateFunc();
+			return __private(this).getPrivateFunc.call(this);
 		};
 		ParentClass.prototype.getPublicFunc = function() {
 			return this.publicParent;
@@ -32,6 +32,9 @@ N._INIT_('privateTest');
 	})();
 	var Children = this.Children = (function(parent) {
 		var __private = __PRIVATIZE__();
+		var __getPrivateFunc = function() {
+			return this.publicChildren;
+		};
 
 		function Children() {
 			__IS_INHERITANCE__ = true;
@@ -39,10 +42,7 @@ N._INIT_('privateTest');
 			__private(this).privateChildren = 'privateChildren';
 			this.publicChildren = 'publicChildren';
 			__private(this).overridePrivateParent = 'overridePrivateParent in Children';
-			var __self = this;
-			__private(this).getPrivateFunc = function() {
-				return __self.publicChildren;
-			};
+			__private(this).getPrivateFunc = __getPrivateFunc;
 		}
 		__extends(Children, parent);
 		Children.prototype.getPublicFunc = function() {

@@ -102,9 +102,6 @@ N._INIT_('testJsClass');
 	var v4;
 	v4 = 'fd';
 	obj = JsObject.assign({}, v1, null, v2, undefined, v3, v4);
-	// Primitives will be wrapped, null and undefined will be ignored.
-	// Note, only string wrappers can have own enumerable properties.
-	//console.log(obj); // { "0": "a", "1": "b", "2": "c" }
 	assert_(obj[0], 'f', 'JsArray::assign 5');
 	assert_(obj[1], 'd', 'JsArray::assign 6');
 	assert_(obj[2], 'c', 'JsArray::assign 7');

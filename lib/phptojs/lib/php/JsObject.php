@@ -5,10 +5,7 @@
  * Date: 3.6.2016
  * Time: 18:50
  */
-namespace jsphp\util;
-
-use jsphp;
-
+namespace jsphp;
 /**
  * Class JsObject
  * @package jsphp
@@ -17,7 +14,7 @@ class JsObject implements \ArrayAccess, \Iterator, \Countable {
 
 	private $data=[];
 	private $isFreeze=false;
-	private $isExtensible=false;
+	private $isExtensible=true;
 
 	/**
 	 * JsObject constructor.

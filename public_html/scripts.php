@@ -17,6 +17,9 @@ echo PHP_EOL;
 echo "//HashArray.js";
 echo PHP_EOL;
 echo file_get_contents(__DIR__ . "/../lib/phptojs/lib/js/HashArray.js");
+echo "//JsObject.js";
+echo PHP_EOL;
+echo file_get_contents(__DIR__ . "/../lib/phptojs/lib/js/JsObject.js");
 echo PHP_EOL;
 echo "//runTest.js" . PHP_EOL;
 echo "

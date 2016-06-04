@@ -67,6 +67,7 @@ global.FALSE = false;
 
 include_("../../../../lib/phptojs/lib/js/classManager.js");
 include_("../../../../lib/phptojs/lib/js/HashArray.js");
+include_("../../../../lib/phptojs/lib/js/JsObject.js");
 
 var content = fs.readFileSync(process.argv[2]);
 content = beautify(content + '', {

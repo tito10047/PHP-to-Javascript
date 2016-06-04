@@ -7,25 +7,17 @@
  */
 namespace jsphp\util;
 
-class JsObjectPrototype{
-	/**
-	 * @var callable
-	 */
-	public static $constructor=undefined;
-
-}
-
-namespace jsphp;
-use jsphp\util\JsObjectPrototype;
+use jsphp;
 
 /**
  * Class JsObject
  * @package jsphp
  */
-class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Countable {
+class JsObject implements \ArrayAccess, \Iterator, \Countable {
 
 	private $data=[];
-	public static $prototype=null;
+	private $isFreeze=false;
+	private $isExtensible=false;
 
 	/**
 	 * JsObject constructor.
@@ -33,21 +25,46 @@ class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Co
 	 * @throws \Exception
 	 */
 	public function __construct($arg=null) {
-		if (self::$constructor!=undefined){
-			call_user_func_array([$this,self::$constructor],func_get_args());
-		}else{
-			if ($arg!=null){
-				if (is_array($arg)){
-					$this->data=$arg;
-					$this->sortData();
-				}else if ($arg instanceof JsObject) {
-					$this->data=$arg->data;
-					$this->sortData();
-				}else{
-					throw new \Exception("Constructor on JsObject can get only array as parameter");
-				}
+		if ($arg!=null){
+			if (is_array($arg)){
+				$this->data=$arg;
+				$this->sortData();
+			}else if ($arg instanceof JsObject) {
+				$this->data=$arg->data;
+				$this->sortData();
+			}else{
+				throw new \Exception("Constructor on JsObject can get only array as parameter");
 			}
 		}
+	}
+
+	public static function freeze(JsObject $target){
+		$target->isFreeze=true;
+		return $target;
+	}
+
+	public static function isExtensible(JsObject $target){
+		return $target->isExtensible;
+	}
+
+	/**
+	 * @param array|JsObject $target
+	 * @return array
+	 * @throws \Exception
+	 */
+	public static function getOwnPropertyNames($target){
+		if ($target instanceof JsObject){
+			return array_keys($target->data);
+		}
+		if (is_array($target)){
+			return array_keys($target);
+		}
+		if (is_string($target)){
+			$chars = str_split($target);
+			$chars[]="length";
+			return $chars;
+		}
+		throw new \Exception("Cannot convert target or null to object");
 	}
 
 	/**
@@ -59,8 +76,10 @@ class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Co
 		$args = func_get_args();
 		if (gettype($target)=="array"){
 			$target = new JsObject($target);
-		}elseif (!$target instanceof JsObject){
-			
+		}elseif ($target instanceof JsObject){
+			if ($target->isFreeze || !$target->isExtensible){
+				throw new \Exception("Can't add property, object is not extensible");
+			}
 		}else if(gettype($target)=="object"){
 		}else if(get_class($target)=="Closure"){
 			return $target;
@@ -195,12 +214,20 @@ class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Co
 	 * @param mixed $value <p>
 	 * The value to set.
 	 * </p>
-	 * @return void
+	 * @return mixed|void
+	 * @throws \Exception
 	 * @since 5.0.0
 	 */
 	public function offsetSet($offset, $value) {
+		if ($this->isFreeze){
+			throw new \Exception("Can't set property {$offset}, object is not extensible");
+		}
+		if (!isset($this->data[$offset]) && !$this->isExtensible){
+			return $value;
+		}
 		$this->data[$offset]=$value;
 		$this->sortData();
+		return $value;
 	}
 
 	/**
@@ -209,10 +236,13 @@ class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Co
 	 * @param mixed $offset <p>
 	 * The offset to unset.
 	 * </p>
-	 * @return void
+	 * @throws \Exception
 	 * @since 5.0.0
 	 */
 	public function offsetUnset($offset) {
+		if ($this->isFreeze){
+			throw new \Exception("Can't delete property {$offset}, object is not extensible");
+		}
 		unset($this->data[$offset]);
 	}
 
@@ -237,7 +267,9 @@ class JsObject extends JsObjectPrototype implements \ArrayAccess, \Iterator, \Co
 	}
 
 	public function __set($name, $value) {
+		if ($this->isFreeze){
+			throw new \Exception("Can't set property {$name}, object is not extensible");
+		}
 		$this->offsetSet($name,$value);
 	}
 }
-JsObject::$prototype=new JsObjectPrototype();

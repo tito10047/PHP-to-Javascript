@@ -34,6 +34,7 @@ function assert_($what, $to, $message = "no message") {
 ;
 include __DIR__ . "/../../../../lib/phptojs/lib/php/HashArray.php";
 include __DIR__ . "/../../../../lib/phptojs/lib/php/JsObject.php";
+include __DIR__ . "/../../../../lib/phptojs/lib/php/JsArray.php";
 
 try {
 	include $argv[1];

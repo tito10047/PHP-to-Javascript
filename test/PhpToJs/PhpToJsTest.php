@@ -17,6 +17,7 @@ namespace {
 }
 namespace PhpTpJs {
 
+	define("undefined", PHP_INT_MAX-3);
 	use phptojs\JsPrinter\JsPrinterAbstract;
 
 	class NodeJsException extends \Exception {
@@ -84,12 +85,28 @@ namespace PhpTpJs {
 
 			$jsAsserts = $this->runJsTest($jsFilePath);
 			foreach ($jsAsserts as $assert) {
+				if (!isset($assert->to) && !isset($assert->what)) continue;
 				$this->assertEquals($assert->to, $assert->what, $fileName . ".js: " . $assert->message);
 			}
 
+			if (count($phpAsserts)!==count($jsAsserts)) {
+				echo "messages PHP=>JS".PHP_EOL;
+				$max = max(count($phpAsserts),count($jsAsserts));
+				for($i=0;$i<$max;$i++){
+					if (count($phpAsserts)>$i){
+						echo "php:".$phpAsserts[$i]->message;
+					}
+					echo "=>";
+					if (count($jsAsserts)>$i){
+						echo "JS:".$jsAsserts[$i]->message;
+					}
+					echo PHP_EOL;
+				}
+			}
 			$this->assertEquals(count($phpAsserts), count($jsAsserts), "php VS js assertions count '{$fileName}'. JS:".count($jsAsserts)." vs PHP:".count($phpAsserts));
 
 			for ($i = 0; $i < count($phpAsserts); $i++) {
+				if ((is_numeric($phpAsserts[$i]->to) && $phpAsserts[$i]->to==undefined) && !isset($jsAsserts[$i]->to)) continue;
 				$this->assertEquals($phpAsserts[$i]->to, $jsAsserts[$i]->to, "php VS js '{$fileName}' '{$phpAsserts[$i]->message}'/{$jsAsserts[$i]->message}");
 			}
 		}

@@ -29,7 +29,6 @@ y = {
 k = 0;
 var key;
 for (key in y) {
-	if (!y.hasOwnProperty(key)) continue;
 	var val;
 	val = y[key];
 	k += parseInt(key) + val;
@@ -38,7 +37,6 @@ assert_(k, 25, 'foreach loop');
 k = 0;
 var _key_;
 for (_key_ in y) {
-	if (!y.hasOwnProperty(_key_)) continue;
 	var val2;
 	val2 = y[_key_];
 	k += val2;

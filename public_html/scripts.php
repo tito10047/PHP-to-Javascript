@@ -61,4 +61,10 @@ echo "
         this.msg=msg;
     };
     include = function (fileName) {};
+    json_encode=function(value){
+		return JSON.stringify(value);
+	};
+	sqrt=function(value){
+		return Math.sqrt(value);
+	};
     ";

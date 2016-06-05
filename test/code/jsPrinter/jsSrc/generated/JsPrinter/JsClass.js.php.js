@@ -28,7 +28,6 @@ N._INIT_('testJsClass');
 	index = 0;
 	var _key_;
 	for (_key_ in jsClass) {
-		if (!jsClass.hasOwnProperty(_key_)) continue;
 		var property;
 		property = jsClass[_key_];
 		assert_(property, testIndexes[index], "test JsClas unindexed index " + index + "");
@@ -64,7 +63,6 @@ N._INIT_('testJsClass');
 	index = 0;
 	var key;
 	for (key in jsClass) {
-		if (!jsClass.hasOwnProperty(key)) continue;
 		property = jsClass[key];
 		assert_(property, testIndexes[testIndexesKeys[index]], "test JsClas indexed values index " + index + "");
 		assert_(key, testIndexesKeys[index], "test JsClas indexed keys index " + index + "");

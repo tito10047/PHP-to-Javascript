@@ -1422,7 +1422,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->print_($vars)
 			->println("for (%{key} in %{expr}){", $keyName, $expression)
 			->indent()
-			->println("if (!%{expr}.hasOwnProperty(%{key})) continue;", $expression, $keyName)
+//			->println("if (!%{expr}.hasOwnProperty(%{key})) continue;", $expression, $keyName)
 			->println($keyVar)
 			->println("%{varName} = %{expr}[%{key}];", $varName, $expression, $keyName)
 			->print_($loopBody)

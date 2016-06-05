@@ -13,7 +13,6 @@ if (process.argv.length != 3) {
 var asserts = [];
 global.assert_ = function (what, to, message) {
 	if (typeof message == 'undefined') message = 'no message';
-	if (typeof what == 'undefined') what = 'no what';
 	asserts.push({
 		'what': what,
 		to: to,
@@ -50,7 +49,12 @@ global.get_class = function (obj) {
 global.Exception = function (msg) {
 	this.msg = msg;
 };
-
+global.json_encode=function(value){
+	return JSON.stringify(value);
+};
+global.sqrt=function(value){
+	return Math.sqrt(value);
+};
 var include_ = function (fileName) {
 	var ev = require(fileName);
 	for (var prop in ev) {
@@ -68,6 +72,7 @@ global.FALSE = false;
 include_("../../../../lib/phptojs/lib/js/classManager.js");
 include_("../../../../lib/phptojs/lib/js/HashArray.js");
 include_("../../../../lib/phptojs/lib/js/JsObject.js");
+include_("../../../../lib/phptojs/lib/js/JsArray.js");
 
 var content = fs.readFileSync(process.argv[2]);
 content = beautify(content + '', {

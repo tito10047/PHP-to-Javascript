@@ -21,14 +21,14 @@ PHP to JavaScript convertor
 
 #### Limitations####
 Its there more differences between PHP and JS. Array in PHP is asociate, but in JS is not.
- For that reason you can use [```jsphp\JsArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/lib/phptojs/lib/php/JsArray.php) wich has same funcionality as build in JS Array.
+ For that reason you can use [```jsphp\JsArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/global/JsArray.js.php) wich has same funcionality as build in JS Array.
  
 In JS you have object wich is similarly to PHP arrays, but there is diferent ordering. Also is not working
  with builtin php functions for manipulating with arrays. So if you need this object, wich working with
- foreach loop, the you can use [```jsphp\JsObject```](https://github.com/tito10047/PHP-to-Javascript/blob/master/lib/phptojs/lib/php/JsObject.php). This object has same funcionality as
+ foreach loop, the you can use [```jsphp\JsObject```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/global/JsClass.js.php). This object has same funcionality as
  JsObject. But if you want extend it, your extended object cant have public or protected members, just use it, but not declare it.
 
-If you need some like associated array you can also use [```jsphp\HashArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/lib/phptojs/lib/php/HashArray.php)
+If you need some like associated array you can also use [```jsphp\HashArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/JsPrinter/array.js.php)
 
 ####Not suport####
 - trait

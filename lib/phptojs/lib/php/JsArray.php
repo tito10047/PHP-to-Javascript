@@ -685,10 +685,29 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	 * @param int $start Index at which to start changing the array (with origin 0). If greater than the length of the array, actual starting index will be set to the length of the array. If negative, will begin that many elements from the end.
 	 * @param int $deleteCount <div>An integer indicating the number of old array elements to remove. If deleteCount is 0, no elements are removed. In this case, you should specify at least one new element. If deleteCount is greater than the number of elements left in the array starting at start, then all of the elements through the end of the array will be deleted.<br>
 	 * If deleteCount is omitted, deleteCount will be equal to (arr.length - start).</div>
-	 * @param mixed ...$item1 The elements to add to the array, beginning at the start index. If you don't specify any elements, splice() will only remove elements from the array.
+	 * @param mixed [...$replacement] The elements to add to the array, beginning at the start index. If you don't specify any elements, splice() will only remove elements from the array.
+	 * @return JsArray
 	 */
-	public function splice($start,$deleteCount){
+	public function splice($start,$deleteCount=null){
+		if ($deleteCount===null){
+			$deleteCount=count($this->data)-1;
+		}
+		$len = $deleteCount;
+		$ret = new JsArray();
 
+		$args = func_get_args();
+		if (count($args)==3) {
+			$ret->data = array_splice($this->data, $start, $len,$args[2]);
+		}else if (count($args)>3){
+			$replacement = [];
+			for($i=2;$i<count($args);$i++){
+				$replacement[]=$args[$i];
+			}
+			$ret->data = array_splice($this->data, $start, $len,$replacement);
+		}else{
+			$ret->data = array_splice($this->data, $start, $len);
+		}
+		return $ret;
 	}
 	
 	/**

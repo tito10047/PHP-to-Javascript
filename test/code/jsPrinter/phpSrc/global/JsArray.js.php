@@ -195,13 +195,38 @@ namespace testJsArray{
 
 	$fruit = new JsArray('cherries', 'apples', 'bananas');
 	$fruit->sort();
-	assert_(json_encode($fruit),'["apples","bananas","cherries"]',"JsArray test 6");
+	assert_(json_encode($fruit),'["apples","bananas","cherries"]',"JsArray test 65");
 
 	$scores = new JsArray(1, 10, 2, 21);
 	$scores->sort();
-	assert_(json_encode($scores),'[1,10,2,21]',"JsArray test 6");
+	assert_(json_encode($scores),'[1,10,2,21]',"JsArray test 66");
 
 	$things = new JsArray('word', 'Word', '1 Word', '2 Words');
 	$things->sort();
-	assert_(json_encode($things),'["1 Word","2 Words","Word","word"]',"JsArray test 6");
+	assert_(json_encode($things),'["1 Word","2 Words","Word","word"]',"JsArray test 67");
+
+	$myFish = new JsArray('angel', 'clown', 'mandarin', 'surgeon');
+	$removed = $myFish->splice(2, 0, 'drum');
+	assert_(json_encode($myFish),'["angel","clown","drum","mandarin","surgeon"]',"JsArray test 68");
+	assert_(json_encode($removed),'[]',"JsArray test 69");
+
+	$removed = $myFish->splice(3, 1);
+	assert_(json_encode($myFish),'["angel","clown","drum","surgeon"]',"JsArray test 70");
+	assert_(json_encode($removed),'["mandarin"]',"JsArray test 71");
+
+	$removed = $myFish->splice(2, 1, 'trumpet');
+	assert_(json_encode($myFish),'["angel","clown","trumpet","surgeon"]',"JsArray test 72");
+	assert_(json_encode($removed),'["drum"]',"JsArray test 73");
+
+	$removed = $myFish->splice(0, 2, 'parrot', 'anemone', 'blue');
+	assert_(json_encode($myFish),'["parrot","anemone","blue","trumpet","surgeon"]',"JsArray test 74");
+	assert_(json_encode($removed),'["angel","clown"]',"JsArray test 75");
+
+	$removed = $myFish->splice($myFish->length -3, 2);
+	assert_(json_encode($myFish),'["parrot","anemone","surgeon"]',"JsArray test 76");
+	assert_(json_encode($removed),'["blue","trumpet"]',"JsArray test 77");
+	
+	
+	
+	
 }

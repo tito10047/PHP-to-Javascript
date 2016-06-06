@@ -21,6 +21,7 @@ class JsArrayIteratorPair{
 class JsArrayIterator implements \Iterator{
 	private $data;
 	private $onlyKeys=false;
+	private $onlyValues=false;
 
 	/**
 	 * JsArrayIterator constructor.
@@ -29,14 +30,17 @@ class JsArrayIterator implements \Iterator{
 	 * @throws \Exception
 	 * @internal
 	 */
-	public function __construct($data, $onlyKeys=false) {
+	public function __construct($data, $onlyKeys=false, $onlyValues=false) {
 		$this->onlyKeys=$onlyKeys;
+		$this->onlyValues=$onlyValues;
 		if ($data instanceof JsArray) {
 			$this->data = [];
 			for ($i = 0; $i < $data->length; $i++) {
 				if ($onlyKeys) {
 					$this->data[] = $data[$i];
-				} else {
+				} else if ($onlyValues) {
+					$this->data[] = $data[$i];
+				}else{
 					$this->data[] = $data[$i];
 				}
 			}
@@ -44,6 +48,8 @@ class JsArrayIterator implements \Iterator{
 			foreach ($data as $key => $value) {
 				if ($onlyKeys) {
 					$this->data[] = $key;
+				} else if ($onlyValues) {
+					$this->data[] = $value;
 				} else {
 					$this->data[] = $value;
 				}
@@ -71,7 +77,7 @@ class JsArrayIterator implements \Iterator{
 		$current = current($this->data);
 		if ($current===false){
 			$ret->done=true;
-			if ($this->onlyKeys){
+			if ($this->onlyKeys || $this->onlyValues){
 				$ret->value=undefined;
 			}else {
 				$ret->value = new JsArray(
@@ -83,7 +89,9 @@ class JsArrayIterator implements \Iterator{
 			$ret->done = false;
 			if ($this->onlyKeys) {
 				$ret->value = key($this->data);
-			} else {
+			} else if ($this->onlyValues) {
+				$ret->value = current($this->data);
+			}else{
 				$ret->value = new JsArray(
 					key($this->data),
 					current($this->data)
@@ -120,7 +128,8 @@ namespace jsphp;
 use jsphp\util\JsArrayIterator;
 
 /**
- * Class JSArray
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+ * The JavaScript Array object is a global object that is used in the construction of arrays; which are high-level, list-like objects.
  * @property int length
  * @package jsphp
  */
@@ -128,6 +137,12 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 
 	private $data;
 
+	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+	 * The JavaScript Array object is a global object that is used in the construction of arrays; which are high-level, list-like objects.
+	 * @param int|mixed $length If the only argument passed to the Array constructor is an integer between 0 and 232-1 (inclusive), this returns a new JavaScript array with length set to that number. If the argument is any other number, a RangeError exception is thrown.
+	 * @param mixed [$elementN] A JavaScript array is initialized with the given elements, except in the case where a single argument is passed to the Array constructor and that argument is a number (see the arrayLength parameter below).Note that this special case only applies to JavaScript arrays created with the Array constructor, not array literals created with the bracket syntax.
+	 */
 	public function __construct() {
 		$args=func_get_args();
 		if (count($args)==1 && is_numeric($args[0])){
@@ -142,6 +157,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
 	 * Calls a defined callback function on each element of an array, and returns an array that contains the results.
 	 * @param callback $callback A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.
 	 */
@@ -153,6 +169,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from
 	 * The Array::from() method creates a new Array instance from an array-like or iterable object.
 	 * @param array|JsArray|string|JsObject $arrayLike An array-like or iterable object to convert to an array.
 	 * @param callable $mapFunction Optional. Map function to call on every element of the array.
@@ -234,6 +251,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
 	 * The Array::isArray() determines whether the passed value is an Array.
 	 * @param mixed $object The object to be checked.
 	 * @return bool If the object is an Array, true is returned, otherwise false is.
@@ -264,6 +282,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/of
 	 * The concat() method returns a new array comprised of the array on which it is called joined with the array(s) and/or value(s) provided as arguments.
 	 * @param mixed|array ...$valueN Arrays and/or values to concatenate into a new array. See the description below for details.
 	 * @return JsArray
@@ -298,6 +317,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/entries
 	 * The every() method tests whether all elements in the array pass the test implemented by the provided function.
 	 * @param callable $callback Function to test for each element.
 	 * @return bool
@@ -316,6 +336,7 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	}
 
 	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
 	 * The fill() method fills all the elements of an array from a start index to an end index with a static value.
 	 * @param mixed $value
 	 * @param int $start
@@ -709,6 +730,20 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 		}
 		return $ret;
 	}
+
+	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift
+	 * The unshift() method adds one or more elements to the beginning of an array and returns the new length of the array.
+	 * @param mixed [...$element] The elements to add to the front of the array.
+	 * @return int The new length property of the object upon which the method was called.
+	 */
+	public function unshift(){
+		$args = func_get_args();
+		for ($i=count($args)-1;$i>=0;$i--){
+			array_unshift($this->data,$args[$i]);
+		}
+		return count($this->data);
+	}
 	
 	/**
 	 * @param mixed $offset
@@ -717,6 +752,14 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 	 */
 	public function offsetExists($offset) {
 		return isset($this->data[$offset]);
+	}
+
+	/**
+	 * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/values
+	 * The values() method returns a new Array Iterator object that contains the values for each index in the array.
+	 */
+	public function values(){
+		return new JsArrayIterator($this,false,true);
 	}
 
 	/**
@@ -763,6 +806,11 @@ class JsArray implements \ArrayAccess, \JsonSerializable{
 		return $this->data;
 	}
 
+	/**
+	 * @param $name
+	 * @internal 
+	 * @return int|null
+	 */
 	public function __get($name) {
 		switch ($name){
 			case "length": return count($this->data);

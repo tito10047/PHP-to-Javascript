@@ -220,4 +220,17 @@ N._INIT_('testJsArray');
 	removed = myFish.splice(myFish.length - 3, 2);
 	assert_(json_encode(myFish), '["parrot","anemone","surgeon"]', 'JsArray test 76');
 	assert_(json_encode(removed), '["blue","trumpet"]', 'JsArray test 77');
+	arr = new JsArray(1, 2);
+	assert_(arr.unshift(0), 3, 'JsArray test 78');
+	assert_(json_encode(arr), '[0,1,2]', 'JsArray test 79');
+	assert_(arr.unshift(-2, -1), '5', 'JsArray test 80');
+	assert_(json_encode(arr), '[-2,-1,0,1,2]', 'JsArray test 81');
+	//	 not working in nodejs
+	//	$arr = new JsArray('w', 'y', 'k', 'o', 'p');
+	//	$eArr = $arr->values();
+	//	assert_($eArr->next()->value,"w","JsArray test 82");
+	//	assert_($eArr->next()->value,"y","JsArray test 83");
+	//	assert_($eArr->next()->value,"k","JsArray test 84");
+	//	assert_($eArr->next()->value,"o","JsArray test 85");
+	//	assert_($eArr->next()->value,"p","JsArray test 86");
 }).call(N.testJsArray);

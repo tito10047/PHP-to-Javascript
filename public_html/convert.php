@@ -12,7 +12,7 @@ if (!@$_POST["code"]) {
 	return;
 }
 $code = urldecode($_POST["code"]);
-$code = str_replace(["__AND__", "__PLUS__"], ["&", "+"], $code);
+$code = str_replace(["__AND__", "__PLUS__","__QUESTION_MARK__","__ART__"], ["&", "+","?","alert"], $code);
 require_once __DIR__ . "/../vendor/autoload.php";
 
 try {

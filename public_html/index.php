@@ -211,7 +211,11 @@ setcookie("converter", true);
 
 		xmlhttp.open("POST", "/convert.php", true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlhttp.send("code=" + encodeURI(code).replaceAll("&", "__AND__").replaceAll("\\+", "__PLUS__").replaceAll("alert", "__ART__"));
+		xmlhttp.send("code=" + encodeURI(code)
+                .replaceAll("&", "__AND__")
+                .replaceAll("\\+", "__PLUS__")
+                .replaceAll("\\?", "__QUESTION_MARK__")
+                .replaceAll("alert", "__ART__"));
 	}
 	document.getElementById("templates").addEventListener("change", function (event) {
 		if (!event.target.value) {

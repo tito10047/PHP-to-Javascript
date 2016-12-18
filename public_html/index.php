@@ -215,6 +215,7 @@ setcookie("converter", true);
                 .replaceAll("&", "__AND__")
                 .replaceAll("\\+", "__PLUS__")
                 .replaceAll("\\?", "__QUESTION_MARK__")
+                .replaceAll("case", "__CA_SE__")
                 .replaceAll("alert", "__ART__"));
 	}
 	document.getElementById("templates").addEventListener("change", function (event) {

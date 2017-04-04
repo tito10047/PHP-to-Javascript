@@ -36,7 +36,7 @@ If you need some like associated array you can also use [```jsphp\HashArray```](
 - declare(ticks)
 - yield
 
-#### Usage####
+#### Usage ####
 ```php
     $parser = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
     $jsPrinter = new \phptojs\JsPrinter\JsPrinter();

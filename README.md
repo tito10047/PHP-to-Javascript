@@ -1,8 +1,8 @@
 PHP to JavaScript convertor
 ===================
-#### See playground: [Online Convertor](http://phptojs.mostka.com/)####
+#### See playground: [Online Convertor](http://phptojs.mostka.com/) ####
 
-####Suports####
+#### Suports ####
 - Namespaces, use
 - Class, abstract class
 - extends and interfaces
@@ -15,11 +15,11 @@ PHP to JavaScript convertor
 - magic methods __get __set and __call (only in ES6 [see Proxy in compatibility table](https://kangax.github.io/compat-table/es6/#test-Proxy))
 - private methods and properties (only in ES6 [see WeakMap in compatibility table](https://kangax.github.io/compat-table/es6/#test-WeakMap))
 
-####Planed####
+#### Planed ####
 - include and require
 - class generation
 
-#### Limitations####
+#### Limitations ####
 Its there more differences between PHP and JS. Array in PHP is asociate, but in JS is not.
  For that reason you can use [```jsphp\JsArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/global/JsArray.js.php) wich has same funcionality as build in JS Array.
  
@@ -30,7 +30,7 @@ In JS you have object wich is similarly to PHP arrays, but there is diferent ord
 
 If you need some like associated array you can also use [```jsphp\HashArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/JsPrinter/array.js.php)
 
-####Not suport####
+#### Not suport ####
 - trait
 - goto
 - declare(ticks)

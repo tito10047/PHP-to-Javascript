@@ -773,7 +773,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pExpr_ClassConstFetch(Expr\ClassConstFetch $node) {//TODO: implement this
-		$this->p($node->class);
+		if (count($node->class->parts)==1 && $node->class->parts[0]=="self"){
+			$this->print_($this->closureHelper->getClassName());
+		}else {
+			$this->p($node->class);
+		}
 		$this->print_('.' . $node->name);
 	}
 

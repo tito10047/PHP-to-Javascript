@@ -2,7 +2,7 @@ PHP to JavaScript convertor
 ===================
 #### See playground: [Online Convertor](http://phptojs.mostka.com/)####
 
-####Suports####
+#### Suports ####
 - Namespaces, use
 - Class, abstract class
 - extends and interfaces
@@ -15,11 +15,12 @@ PHP to JavaScript convertor
 - magic methods __get __set and __call (only in ES6 [see Proxy in compatibility table](https://kangax.github.io/compat-table/es6/#test-Proxy))
 - private methods and properties (only in ES6 [see WeakMap in compatibility table](https://kangax.github.io/compat-table/es6/#test-WeakMap))
 
-####Planed####
+#### Planed ####
 - include and require
 - class generation
+- yield
 
-#### Limitations####
+#### Limitations ####
 Its there more differences between PHP and JS. Array in PHP is asociate, but in JS is not.
  For that reason you can use [```jsphp\JsArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/global/JsArray.js.php) wich has same funcionality as build in JS Array.
  
@@ -30,13 +31,13 @@ In JS you have object wich is similarly to PHP arrays, but there is diferent ord
 
 If you need some like associated array you can also use [```jsphp\HashArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/JsPrinter/array.js.php)
 
-####Not suport####
+#### Not suport ####
 - trait
 - goto
 - declare(ticks)
-- yield
 
-#### Usage####
+Usage
+===================
 ```php
     $parser = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
     $jsPrinter = new \phptojs\JsPrinter\JsPrinter();
@@ -45,6 +46,27 @@ If you need some like associated array you can also use [```jsphp\HashArray```](
     $stmts = $parser->parse($phpCode);
     $jsCode = $jsPrinter->jsPrint($stmts);
 ```
+----
+### Use auto converter ###
+You can create file watcher for auto generation js script from your php
+code when is saved.
+
+#### PHPStorm ####
+go to `File/Setting/Tools/File Watchers` add custom watcher and set
+
+- File type: PHP
+- Scope: Create new scope to your php scripts to convert
+- Program: chose yor location to `php.exe`
+- Arguments:
+  - `-f`
+  - `$ProjectFileDir$/../PHP-to-Javascript/bin/phpstormWatcher.php`
+  - `$FileName$`
+  - `$ProjectFileDir$/phpJs` php scripts to generate
+  - `$ProjectFileDir$/public/js/phpjs` output directory
+- Output paths to refresh: `$ProjectFileDir$/public/js/phpjs`
+
+
+
 Example
 ===================
 

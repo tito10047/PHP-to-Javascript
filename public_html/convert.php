@@ -48,5 +48,5 @@ try {
 } catch (PhpParser\Error $e) {
     echo 'ERROR:', $e->getMessage();
 } catch (Exception $e) {
-    echo "ERROR:Some is wrong";
+    echo "ERROR:Some is wrong".PHP_EOL.$e->getMessage();
 }

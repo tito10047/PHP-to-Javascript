@@ -8,6 +8,8 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+define('JS_LIB_DIR',__DIR__.'/../lib/phptojs/lib/js');
+
 function showError($message)
 {
 	echo $message . PHP_EOL;
@@ -80,4 +82,17 @@ try{
 }
 if ($errorCount>0){
 	exit(1);
+}
+$libDir = $jsRootDir.DIRECTORY_SEPARATOR.'lib';
+if (!file_exists($libDir)){
+	mkdir($libDir);
+}
+$libFiles = glob(JS_LIB_DIR.DIRECTORY_SEPARATOR.'*');
+foreach ($libFiles as $file){
+	$name = substr($file,strlen(JS_LIB_DIR));
+	$exportName = $libDir.DIRECTORY_SEPARATOR.$name;
+	if (file_exists($exportName) && filemtime($exportName)>=filemtime($file)){
+		continue;
+	}
+	copy($file,$exportName);
 }

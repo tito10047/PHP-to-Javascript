@@ -116,9 +116,12 @@ while( $character_index < strlen(  $code  ) ){
 		case '}':
 			if(  $scope == CODE ){ /* end-of-block curly brace */
 				if(  $num_indents>0  )$num_indents -- ;
-				$pre = "\n";
-				$pre .= str_repeat(  "\t", $num_indents  );
-				$post = "\n" . str_repeat(  "\t", $num_indents ) ;
+				$tmp = mb_substr( $code, $character_index +1, 1 );
+				$pre="\n";
+				$pre.=str_repeat("\t", $num_indents);
+				if ($tmp!=";") {
+					$post="\n".str_repeat("\t", $num_indents);
+				}
 			}else if( $scope == ESCAPE ){
 				$scope = $before_escape_scope ;
 			}

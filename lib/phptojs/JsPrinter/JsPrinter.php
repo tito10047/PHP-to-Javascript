@@ -170,8 +170,8 @@ class ClosureHelper {
 	}
 
 	/** @param Stmt\ClassConst $classConstant */
-	public function addClassConstants($classConstant) {
-		$this->classConstants = $classConstant;
+	public function addClassConstants(Stmt\ClassConst $classConstant) {
+		$this->classConstants[] = $classConstant;
 	}
 
 	public function addClassPrivatePropertyName($name) {
@@ -1047,7 +1047,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 		foreach ($this->closureHelper->getClassConstants() as $consts) {
 			/** @var Stmt\ClassConst $consts */
-			foreach ($consts as $cons) {
+			foreach ($consts->consts as $cons) {
 				$this->print_("%{ClassName}.", $className);
 				$this->pConst($cons);
 				$this->println(";");

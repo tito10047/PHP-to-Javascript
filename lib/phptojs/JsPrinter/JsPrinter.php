@@ -1028,7 +1028,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->popDelay($constructorBody);
 
 		$this->pushDelay()->indent();
-		if ($node->type & Stmt\Class_::MODIFIER_ABSTRACT) {
+		if (is_int($node->flags) && $node->flags & Stmt\Class_::MODIFIER_ABSTRACT) {
 			$this->println('%{ClassName}.prototype.__isAbstract__=true;', $className);
 		}
 		foreach ($this->closureHelper->getClassStaticProperties() as $property) {

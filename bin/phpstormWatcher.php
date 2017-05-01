@@ -72,7 +72,13 @@ try{
  * Don't modify this file because changes will be lost 
  */
  ".$jsCode;
+
+	$sourceCode=$jsCode;
+	require_once __DIR__.'/scriptformatter.php';
+	$jsCode=$sourceCode;
+
 	file_put_contents($jsFileName, $jsCode);
+
 } catch (PhpParser\Error $e) {
 	echo 'ERROR:', $e->getMessage();
 	$errorCount++;

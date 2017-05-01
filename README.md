@@ -1,6 +1,6 @@
 PHP to JavaScript convertor
 ===================
-#### See playground: [Online Convertor](http://phptojs.mostka.com/)####
+#### See playground: [Online Convertor](http://phptojs.mostka.com/) ####
 
 #### Suports ####
 - Namespaces, use

@@ -127,7 +127,10 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract {
 	 */
 	protected function pStmts(array $nodes, $indent = true) {
 		foreach ($nodes as $node) {
-			$this->pComments($node->getAttribute('comments', array()));
+			$comments=$node->getAttribute('comments', array());
+			if ($comments && !($node instanceof Stmt\ClassMethod || $node instanceof Stmt\ClassConst)){
+				$this->pComments($comments);
+			}
 
 			$this->writer->pushDelay();
 			$this->p($node);

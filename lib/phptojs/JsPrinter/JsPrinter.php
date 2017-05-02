@@ -1038,12 +1038,22 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		foreach ($this->closureHelper->getClassStaticProperties() as $property) {
 			/** @var Stmt\PropertyProperty $property */
 			//if ($node->type & Stmt\Class_::MODIFIER_STATIC){ TODO: implement private static property
+			$comments = $property->getAttribute('comments', array());
+			if ($comments) {
+				$this->pComments($comments);
+				$property->setAttribute("comments",[]);
+			}
 			$this->print_("%{ClassName}.", $node->name);
 			$this->p($property);
 			$this->println(";");
 			//}
 		}
 		foreach ($this->closureHelper->getClassPublicMethods() as $method) {
+			$comments = $method->getAttribute('comments', array());
+			if ($comments) {
+				$this->pComments($comments);
+				$method->setAttribute("comments",[]);
+			}
 			/** @var Stmt\ClassMethod $method */
 			$this->print_("%{ClassName}.%{prototype}", $className, $method->type & Stmt\Class_::MODIFIER_STATIC ? "" : "prototype.");
 			$this->pStmt_ClassMethod($method, true);
@@ -1052,6 +1062,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		foreach ($this->closureHelper->getClassConstants() as $consts) {
 			/** @var Stmt\ClassConst $consts */
 			foreach ($consts->consts as $cons) {
+				$comments = $cons->getAttribute('comments', array());
+				if ($comments) {
+					$this->pComments($comments);
+					$cons->setAttribute("comments",[]);
+				}
 				$this->print_("%{ClassName}.", $className);
 				$this->pConst($cons);
 				$this->println(";");
@@ -1099,6 +1114,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->writeDelay($constructorBody);
 
 		foreach ($this->closureHelper->getClassPrivateMethods() as $method) {
+			$comments = $method->getAttribute('comments', array());
+			if ($comments) {
+				$this->pComments($comments);
+				$method->setAttribute("comments",[]);
+			}
 			/** @var Stmt\ClassMethod $method */
 			$this->println("__private(this).%{methodName}=__%{methodName};",$method->name,$method->name);
 		}

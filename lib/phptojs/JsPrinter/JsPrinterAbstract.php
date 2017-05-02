@@ -155,7 +155,11 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract {
 	 */
 	protected function pComments(array $comments) {
 		foreach ($comments as $comment) {
-			$this->writer->println($comment->getReformattedText());
+			$comment=$comment->getReformattedText();
+			$comment=preg_replace('/(@(param|var) )([\w\|\\\\]+)( \$\w*)?/',"$1{\$3}$4",$comment);
+			$comment=preg_replace('/(@(param|var) )({[\w\|\\\\]*} )?\$(\w*)/',"$1$3$4",$comment);
+			$comment=str_replace(["@var","{\\","\\"],["@type","{N.","."],$comment);
+			$this->writer->println($comment);
 		}
 	}
 

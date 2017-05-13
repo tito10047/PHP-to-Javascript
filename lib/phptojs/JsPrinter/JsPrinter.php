@@ -1173,7 +1173,11 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 		$this->print_("})(");
 		if ($node->extends || $node->implements) {
-			$this->print_("%{extend}", $node->extends ? $node->extends : 'null');
+			if ($node->extends){
+				$this->p($node->extends);
+			}else{
+				$this->print_('null');
+			}
 			if ($node->implements) {
 				$this->print_(',[');
 				$this->pCommaSeparated($node->implements);

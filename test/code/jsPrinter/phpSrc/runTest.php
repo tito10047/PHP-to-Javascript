@@ -37,7 +37,11 @@ include __DIR__ . "/../../../../lib/phptojs/lib/php/JsObject.php";
 include __DIR__ . "/../../../../lib/phptojs/lib/php/JsArray.php";
 
 try {
-	include $argv[1];
+	if (file_exists($argv[1])) {
+		include $argv[1];
+	}else{
+		sendError("script not found '{$argv[1]}'");
+	}
 } catch (Exception $e) {
 	sendError($e->getTraceAsString());
 }

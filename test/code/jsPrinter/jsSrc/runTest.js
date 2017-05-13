@@ -1,5 +1,4 @@
-var beautify = require('/usr/local/lib/node_modules/js-beautify/js/index.js').js_beautify,
-	fs = require('fs'),
+var fs = require('fs'),
 	path = require('path');
 
 function sendError(message) {
@@ -73,14 +72,6 @@ include_("../../../../lib/phptojs/lib/js/classManager.js");
 include_("../../../../lib/phptojs/lib/js/HashArray.js");
 include_("../../../../lib/phptojs/lib/js/JsObject.js");
 include_("../../../../lib/phptojs/lib/js/JsArray.js");
-
-var content = fs.readFileSync(process.argv[2]);
-content = beautify(content + '', {
-	indent_with_tabs: true,
-	preserve_newlines: false
-});
-fs.writeFileSync(process.argv[2], content);
-
 
 include_(process.argv[2]);
 

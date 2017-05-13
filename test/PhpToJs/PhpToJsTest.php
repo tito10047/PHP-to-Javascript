@@ -16,7 +16,6 @@ namespace {
 	}
 }
 namespace PhpTpJs {
-
 	define("undefined", PHP_INT_MAX-3);
 	use phptojs\JsPrinter\JsPrinterAbstract;
 
@@ -26,6 +25,7 @@ namespace PhpTpJs {
 
 	class PhpToJsTest extends \PHPUnit_Framework_TestCase {
 
+		const JS_FORMATTER=__DIR__.'/../../bin/scriptformatter.php';
 		private $phpGlobalFiles, $PATH_SRC_PHP, $PATH_SRC_JS, $PATH_TO_JS_TEST, $PATH_TO_PHP_TEST;
 		private $nodeJsExist = false;
 		private $onlyGenerate = false;
@@ -74,8 +74,13 @@ namespace PhpTpJs {
 			if (!$jsPrinter->jsPrintFileTo($filePath, $jsFilePath)) {
 				$this->throwException(new \Exception("cant write to '{$jsFilePath}'"));
 			}
+
 			foreach ($jsPrinter->getErrors() as $error) {
 				echo $error . PHP_EOL;
+			}
+			if (file_exists(self::JS_FORMATTER)) {
+				$source_file=$jsFilePath;
+//				require self::JS_FORMATTER;
 			}
 
 			if ($this->onlyGenerate) {
@@ -118,7 +123,7 @@ namespace PhpTpJs {
 		protected function runPhpTest($filePath) {
 			$filePath = realpath($filePath);
 
-			exec("php {$this->PATH_TO_PHP_TEST} '{$filePath}'", $output, $returnCode);
+			exec("php {$this->PATH_TO_PHP_TEST} {$filePath}", $output, $returnCode);
 			if ($returnCode != false) {
 				echo "================" . PHP_EOL;
 				var_dump($output);
@@ -135,7 +140,7 @@ namespace PhpTpJs {
 
 		protected function runJsTest($filePath) {
 			$filePath = realpath($filePath);
-			exec("{$this->nodeJsPath} {$this->PATH_TO_JS_TEST} '{$filePath}'", $output, $returnCode);
+			exec("{$this->nodeJsPath} {$this->PATH_TO_JS_TEST} {$filePath}", $output, $returnCode);
 			if ($returnCode != false) {
 				echo "================" . PHP_EOL;
 				var_dump($output);

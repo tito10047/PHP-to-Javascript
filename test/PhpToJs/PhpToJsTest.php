@@ -29,14 +29,18 @@ namespace PhpTpJs {
 		private $phpGlobalFiles, $PATH_SRC_PHP, $PATH_SRC_JS, $PATH_TO_JS_TEST, $PATH_TO_PHP_TEST;
 		private $nodeJsExist = false;
 		private $onlyGenerate = false;
+		private $nodeJsPath=null;
 
 		public function __construct($name = null, $data = array(), $dataName = '') {
 			parent::__construct($name, $data, $dataName);
+			$this->nodeJsPath = getenv('nodejs');
+			if (!$this->nodeJsPath){
+				throw new \Exception("define nodejs in env");
+			}
 			if (!self::checkNodeJs()) {
 //                exit;
 				//TODO: replace this with warning
-				echo "nodejs not found in system path";
-				return;
+				throw new \Exception("nodejs not found in system path");
 			}
 			$this->nodeJsExist = true;
 			$s = DIRECTORY_SEPARATOR;
@@ -131,7 +135,7 @@ namespace PhpTpJs {
 
 		protected function runJsTest($filePath) {
 			$filePath = realpath($filePath);
-			exec("/opt/node-v6.2.0/bin/node {$this->PATH_TO_JS_TEST} '{$filePath}'", $output, $returnCode);
+			exec("{$this->nodeJsPath} {$this->PATH_TO_JS_TEST} '{$filePath}'", $output, $returnCode);
 			if ($returnCode != false) {
 				echo "================" . PHP_EOL;
 				var_dump($output);
@@ -181,7 +185,7 @@ namespace PhpTpJs {
 		}
 
 		protected function checkNodeJs() {
-			exec("nodejs -v", $output);
+			exec("{$this->nodeJsPath} -v", $output);
 			return count($output) == 1;
 		}
 

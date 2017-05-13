@@ -114,7 +114,8 @@ while( $character_index < strlen(  $code  ) ){
 				/* Sigbj�rn special: do not wrap and indent empty blocks (object literal) */
 				if( lookahead( $code, $character_index, true )=='}' ){ /* we have an object literal. We'll simply add a closing brace and jump ahead */
 					$character_index=strpos( $code, '}', $character_index );
-					$post='}';
+					$t = str_repeat("\t", $num_indents);
+					$post="};\n{$t}";
 					break;
 				}
 				$num_indents ++ ;

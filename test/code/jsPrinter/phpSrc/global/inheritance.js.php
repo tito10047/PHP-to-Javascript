@@ -12,10 +12,10 @@ namespace inheritance1 {
 		}
 	}
 }
-namespace inheritance2 {
+namespace inheritance1 {
 
 
-	class FooParent extends \inheritance1\FooAbs {
+	class FooParent extends FooAbs {
 		public $foo=5;
 
 		public function __construct() {
@@ -53,8 +53,8 @@ namespace inheritance3 {
 
 	use inheritance1\FooAbs;
 	use inheritance1\FooInt;
-	use inheritance2\FooChild;
-	use inheritance2\FooParent;
+	use inheritance1\FooChild;
+	use inheritance1\FooParent;
 
 	$fooParent=new FooParent();
 	$fooChild=new FooChild();

@@ -19,14 +19,18 @@ function showError($message)
 	exit(1);
 }
 
-if ($argc!=4){
+if ($argc>3){
 	showError("Bad argument count");
 }
 
 $scriptName = $argv[1];
 $scriptDir = getcwd();
 $phpRootDir = $argv[2];
-$jsRootDir = $argv[3];
+if (isset($argv[3])) {
+	$jsRootDir=$argv[3];
+}else{
+	$jsRootDir=$scriptDir;
+}
 $phpFilename = $scriptDir . DIRECTORY_SEPARATOR . $scriptName;
 
 if (!file_exists($phpFilename)){

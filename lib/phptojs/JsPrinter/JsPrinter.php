@@ -469,7 +469,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pName_FullyQualified(Name\FullyQualified $node) {
-		$this->print_('N.' . implode('.', $node->parts));
+		if (count($node->parts)>1){
+			$this->print_('N.');
+		}
+		$this->print_(implode('.', $node->parts));
 	}
 
 	public function pName_Relative(Name\Relative $node) {//TODO: implement this
@@ -952,6 +955,13 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->p($node->name);
 			$this->println("');")
 				->println("(function(){");
+
+			$this->indent();
+			$this->println("for(var __ClassName in this){");
+			$this->indentln('eval("var "+__ClassName+" = this."+__ClassName+";");');
+			$this->println("}");
+			$this->outdent();
+
 			$this->closureHelper->pushVarScope();
 			$this->pStmts($node->stmts);
 			$this->closureHelper->popVarScope();

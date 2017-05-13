@@ -116,7 +116,7 @@ namespace PhpTpJs {
 
 			for ($i = 0; $i < count($phpAsserts); $i++) {
 				if ((is_numeric($phpAsserts[$i]->to) && $phpAsserts[$i]->to==undefined) && !isset($jsAsserts[$i]->to)) continue;
-				$this->assertEquals($phpAsserts[$i]->to, $jsAsserts[$i]->to, "php VS js '{$fileName}' '{$phpAsserts[$i]->message}'/{$jsAsserts[$i]->message}");
+				$this->assertEquals($phpAsserts[$i]->to, $jsAsserts[$i]->to, "php VS js '{$fileName}' '{$phpAsserts[$i]->message}'/'{$jsAsserts[$i]->message}''");
 			}
 		}
 

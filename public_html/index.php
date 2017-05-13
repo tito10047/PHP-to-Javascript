@@ -55,6 +55,7 @@ setcookie("converter", true);
 <div class="center">
 	<div style="text-align: center;">
 		<h1>PHP to JavaScript converter</h1>
+        <h2>OOP, Inheritance, Exceptions, Namespaces and more</h2>
 		<h3><a href="https://github.com/tito10047/phptojs" target="_blank">See more on github</a></h3>
 		<div>
 			<a class="github-button" href="https://github.com/tito10047/phptojs" data-icon="octicon-eye"
@@ -157,6 +158,12 @@ setcookie("converter", true);
 		xmlhttp.open("GET", "/getTemplate.php?template=" + template, true);
 		xmlhttp.send();
 	}
+	document.onreadystatechange = function(){
+		if(document.readyState === 'complete'){
+			loadTemplate("inheritance");
+		}
+	};
+
 	String.prototype.replaceAll = function (search, replacement) {
 		var target = this;
 		return target.replace(new RegExp(search, 'g'), replacement);

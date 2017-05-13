@@ -1,13 +1,23 @@
 <?php
 /* defining the various scopes we care about for this excercise */
-define( 'CODE', 0 ); /* normal JS code */
-define( 'STRING_DBL', 1 ); /* double quoted string */
-define( 'STRING_SGL', 2 ); /* single quoted string */
-define( 'REGEXP', 3 ); /* regexp literal */
-define( 'ESCAPE', 4 ); /* some escape char (backslash) */
-define ( 'MULTI_LINE_COMMENT', 5 );
-define ( 'SINGLE_LINE_COMMENT', 6 );
-define ( 'REGEXP_CHAR_CLASS', 7 ); /* inside a [ ... ] clause in a regular expression. Requires its own scope because /[/]/ is a valid regexp */
+if (!defined("CODE")) {
+	define('CODE', 0); /* normal JS code */
+	define('STRING_DBL', 1); /* double quoted string */
+	define('STRING_SGL', 2); /* single quoted string */
+	define('REGEXP', 3); /* regexp literal */
+	define('ESCAPE', 4); /* some escape char (backslash) */
+	define('MULTI_LINE_COMMENT', 5);
+	define('SINGLE_LINE_COMMENT', 6);
+	define('REGEXP_CHAR_CLASS', 7); /* inside a [ ... ] clause in a regular expression. Requires its own scope because /[/]/ is a valid regexp */
+	function lookahead($str, $index, $ignore_whitespace=false) { /* returns next character, potentially ignoring whitespace */
+		$char=mb_substr($str, $index+1, 1);
+		while ($ignore_whitespace && $index<count($str) && trim($char)=='') {
+			$index++;
+			$char=mb_substr($str, $index+1, 1);
+		}
+		return $char ? $char : ''; /* if we've gone past end of string, substr() returns false - we'd rather return '' */
+	}
+}
 $debug=false;
 $start = time();
 $url = isset( $_GET['url'] ) ? $_GET['url'] : '';
@@ -18,7 +28,9 @@ if( isset($sourceCode) && $sourceCode ) {
 	$code = preg_replace('~(*BSR_ANYCRLF)\R~', "\n", $code);
 }else{
 	/* enable command line usage */
-	$source_file = ( isset( $argv[1])  && is_file( $argv[1])  ) ? $argv[1] : '';
+	if (!isset($source_file) || !$source_file) {
+		$source_file=(isset($argv[1]) && is_file($argv[1])) ? $argv[1] : '';
+	}
 	$code = file_get_contents($source_file);
 }
 
@@ -211,16 +223,9 @@ if(!isset($sourceCode) || !$sourceCode){
 	$f=fopen($source_file, 'w');
 	fwrite($f, $output);
 	fclose($f);
+	echo $source_file;
 }else{
-	$sourceCode=$output;echo "da";
+	$sourceCode=$output;
 }
 
-function lookahead($str, $index, $ignore_whitespace=false){ /* returns next character, potentially ignoring whitespace */
-	$char = mb_substr( $str, $index+1, 1 );
-	while(  $ignore_whitespace && $index<count( $str ) && trim($char)=='' ){
-		$index++;
-		$char = mb_substr( $str, $index+1, 1 );
-	}
-	return $char ? $char : ''; /* if we've gone past end of string, substr() returns false - we'd rather return '' */
-}
 ?>

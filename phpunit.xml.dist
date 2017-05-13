@@ -21,4 +21,7 @@
             <directory suffix=".php">./lib/PhpToJs/</directory>
         </whitelist>
     </filter>
+    <php>
+        <env name="nodejs" value="G:\nodejs\node.exe"/>
+    </php>
 </phpunit>

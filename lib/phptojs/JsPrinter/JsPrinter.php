@@ -517,7 +517,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	public function pScalar_String(Scalar\String_ $node) {
 		$str = addcslashes($node->value, '\'\\');
-		$str = str_replace(PHP_EOL, '\n\\' . PHP_EOL, $str);
+		$str = str_replace(PHP_EOL, '\r\n\\' . PHP_EOL, $str);
 		$this->print_('\'' . $str . '\'');
 	}
 
@@ -689,13 +689,13 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$listNode = $leftNode;
 			$leftNode = new Expr\Variable("__LIST_VALUES__");
 			$pList = [];
-			foreach ($listNode->vars as $var) {
+			foreach ($listNode->items as $var) {
 				if ($var == null) {
 					$pList[] = null;
 					continue;
 				}
-				$this->closureHelper->pushVar($var->name);
-				$pList[] = $var->name;
+				$this->closureHelper->pushVar($var->value->name);
+				$pList[] = $var->value->name;
 			}
 			$this->closureHelper->pushVar("__LIST_VALUES__");
 			$this->printVarDef();
@@ -1536,10 +1536,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->println("var %{vars};", join(", ", array_unique($catchesVars)));
 		$this->print_(join('else', $catches));
 		$this->outdent();
-		if ($node->finallyStmts !== null) {
+		if ($node->finally !== null) {
 			$this->println("}finally{")
 				->indent();
-			$this->pStmts($node->finallyStmts);
+			$this->pStmts($node->finally->stmts);
 			$this->outdent();
 
 		}
@@ -1548,7 +1548,8 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	public function pStmt_Catch(Stmt\Catch_ $node, &$catchesVars) {
 		$this->pushDelay(false);
-		$this->p($node->type);
+		//TODO: implements multiple types in catch
+		$this->p($node->types[0]);
 		$this->popDelayToVar($type);
 		$this->println("if (__e__ instanceof %{type}){", $type)
 			->indent()
@@ -1672,13 +1673,13 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		foreach ($encapsList as $element) {
 			if (is_string($element)) {
 				$str = addcslashes($element, '\'\\');
-				$str = str_replace(PHP_EOL, '\n\\' . PHP_EOL, $str);
+				$str = str_replace(PHP_EOL, '\r\n\\' . PHP_EOL, $str);
 				$this->print_($str);
 				//$str .= addcslashes($element, "\n\r\t\f\v$" . $quote . "\\");
 			} else {
 				if ($element instanceof Scalar\EncapsedStringPart) {
 					if ($element->value==PHP_EOL){
-						$this->print_("\\n\\\n");
+						$this->print_("\\r\\n\\\n");
 					}else {
 						$this->print_($element->value);
 					}

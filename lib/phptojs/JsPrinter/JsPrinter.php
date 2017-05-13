@@ -241,6 +241,10 @@ class ClosureHelper {
 		return $className;
 	}
 
+	public function getSimpleClassName() {
+		return $this->currentClassName;
+	}
+
 	public function getNamespaceName() {
 		$name = "";
 		if ($this->isNamespace) {
@@ -777,7 +781,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	public function pExpr_ClassConstFetch(Expr\ClassConstFetch $node) {//TODO: implement this
 		if (count($node->class->parts)==1 && $node->class->parts[0]=="self"){
-			$this->print_($this->closureHelper->getClassName());
+			$this->print_($this->closureHelper->getSimpleClassName());
 		}else {
 			$this->p($node->class);
 		}

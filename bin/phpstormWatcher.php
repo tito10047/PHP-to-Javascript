@@ -19,7 +19,7 @@ function showError($message)
 	exit(1);
 }
 
-if ($argc>3){
+if ($argc<3){
 	showError("Bad argument count");
 }
 

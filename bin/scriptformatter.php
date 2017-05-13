@@ -17,6 +17,37 @@ if (!defined("CODE")) {
 		}
 		return $char ? $char : ''; /* if we've gone past end of string, substr() returns false - we'd rather return '' */
 	}
+	function lookReverseForTo($str, $index, $search, $endChar){
+		$subStr="";
+		if (!is_array($search)){
+			$search=[$search];
+		}
+		if (!is_array($endChar)){
+			$endChar=[$endChar];
+		}
+		$len=0;
+		foreach($search as $s){
+			if (mb_strlen($s)>$len){
+				$len=mb_strlen($s);
+			}
+		}
+		while($index>0){
+			$char=mb_substr($str,--$index,1);
+			$subStr=$char.$subStr;
+			if (mb_strlen($subStr)>$len){
+				$subStr=mb_substr($subStr,0,$len);
+			}
+			foreach($search as $s){
+				if ($s==mb_substr($subStr,mb_strlen($subStr)-mb_strlen($s))){
+					return true;
+				}
+			}
+			if (in_array($char,$endChar)){
+				return false;
+			}
+		}
+		return false;
+	}
 }
 $debug=false;
 $start = time();
@@ -140,11 +171,12 @@ while( $character_index < strlen(  $code  ) ){
 			}
 			break;
 		case ';':
-//		case ',':
 			if(  $scope == CODE ){ /* end-of-statement semicolon //, or between-variables comma */
-				$post = "\n";
-				$post .= str_repeat(  "\t", $num_indents  );
-				$at_start_of_statement_or_expression = true;
+				if (!lookReverseForTo($code,$character_index,"for","\n")) {
+					$post="\n";
+					$post.=str_repeat("\t", $num_indents);
+					$at_start_of_statement_or_expression=true;
+				}
 			}else if( $scope == ESCAPE ){
 				$scope = $before_escape_scope ;
 			}

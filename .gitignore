@@ -3,3 +3,4 @@
 .idea/
 vendor
 /dev/
+/test/code/jsPrinter/jsSrc/generated/JsPrinter/

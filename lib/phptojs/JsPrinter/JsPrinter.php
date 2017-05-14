@@ -1144,10 +1144,14 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		if ($this->closureHelper->classHasConstructor()) {
 			$this->println("if (__isInheritance==false){");
 			$this->indent();
-			$this->print_("this.__construct(");
-			$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());
-			$this->println(");");
+				$this->print_("this.__construct(");
+				$this->pCommaSeparated($this->closureHelper->getClassConstructorParams());
+				$this->println(");");
 			$this->outdent();
+			$this->println("}");
+		}else {
+			$this->println("if (this.__construct){");
+			$this->indentln("this.__construct.apply(this,arguments);");
 			$this->println("}");
 		}
 		$this->outdent()

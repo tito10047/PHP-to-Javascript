@@ -461,6 +461,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->print_('parent.prototype');
 			return;
 		}
+		if (count($node->parts) == 1 && $node->parts[0] == 'self') {
+			$this->print_($this->closureHelper->getSimpleClassName());
+			return;
+		}
 		if (count($node->parts) == 1 && $node->parts[0] == "FALSE") {
 			$this->print_("false");
 			return;

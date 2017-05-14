@@ -1066,16 +1066,6 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->println(";");
 			//}
 		}
-		foreach ($this->closureHelper->getClassPublicMethods() as $method) {
-			$comments = $method->getAttribute('comments', array());
-			if ($comments) {
-				$this->pComments($comments);
-				$method->setAttribute("comments",[]);
-			}
-			/** @var Stmt\ClassMethod $method */
-			$this->print_("%{ClassName}.%{prototype}", $className, $method->type & Stmt\Class_::MODIFIER_STATIC ? "" : "prototype.");
-			$this->pStmt_ClassMethod($method, true);
-		}
 
 		foreach ($this->closureHelper->getClassConstants() as $consts) {
 			/** @var Stmt\ClassConst $consts */
@@ -1089,8 +1079,19 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 				$this->pConst($cons);
 				$this->println(";");
 			}
-
 		}
+
+		foreach ($this->closureHelper->getClassPublicMethods() as $method) {
+			$comments = $method->getAttribute('comments', array());
+			if ($comments) {
+				$this->pComments($comments);
+				$method->setAttribute("comments",[]);
+			}
+			/** @var Stmt\ClassMethod $method */
+			$this->print_("%{ClassName}.%{prototype}", $className, $method->type & Stmt\Class_::MODIFIER_STATIC ? "" : "prototype.");
+			$this->pStmt_ClassMethod($method, true);
+		}
+
 		if ($this->closureHelper->getClassHasMagicMethods()) {
 			$this->println("var __handler = {")
 				->indent()

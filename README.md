@@ -71,56 +71,151 @@ Example
 ===================
 
 ```php
-    namespace foo\foo1{
-        interface AInt{
-            const FOO=1;
-            public function funcAInt();
-        }
+interface FooInt{
+    function fooIntFunc1($a, $b = 5);
+}
 
-        abstract class BAbs{
-            public function funcBAbs(){}
-            public abstract function funcBAbsA();
-        }
+abstract class FooAbs implements FooInt
+{
+    abstract function fooAbsFunc1($a, $b);
 
-        class C extends BAbs implements AInt{
-
-            public function funcAInt() {}
-
-            public function funcBAbsA() {}
-        };
+    function fooAbsFunc2($a, $b){
+        return $a + $b + 10;
     }
-    namespace{
-        echo \foo\foo1\AInt::FOO;
+}
+
+class FooParent extends FooAbs{
+    public $foo = 5;
+
+    public function __construct() {
+		$this->foo=5;
+	}
+
+	function fooAbsFunc1($a, $b){
+		parent::fooAbsFunc2(1,5);
+        return $a + $b;
     }
+
+    function fooIntFunc1($a, $b = 5){
+        return $a + $b + 5;
+    }
+
+    public static function fooStatic(){
+    	return 10;
+	}
+}
+
+class FooChild extends FooParent
+{
+    public $foo = 6;
+
+    function fooIntFunc1($a, $b = 5){
+        return $a + $b;
+    }
+
+    function testParent(){
+        assert_($this->fooIntFunc1(5, 5), 10, 'testParent 1');
+        assert_(parent::fooIntFunc1(5, 5), 15, 'testParent 2');
+    }
+}
+
+$fooParent = new FooParent();
+$fooChild = new FooChild();
+
+assert_($fooParent instanceof FooParent, true, 'fooParent instanceof FooParent');
+assert_($fooParent instanceof FooInt, true, 'fooParent instanceof FooInt');
+
+assert_($fooChild instanceof FooChild, true, 'fooChild instanceof FooChild');
+assert_($fooChild instanceof FooParent, true, 'fooChild instanceof FooParent');
+assert_($fooChild instanceof FooAbs, true, 'fooChild instanceof FooAbs');
+assert_($fooChild instanceof FooInt, true, 'fooChild instanceof FooInt');
+
+assert_(FooChild::fooStatic(),10, "FooChild::fooStatic()");
+
+$fooChild->testParent();
 ```
 
 Is converted to
 ```javascript
-    N._INIT_('foo.foo1');
-    (function() {
-        var AInt = this.AInt = (function(){
-            function AInt(){__INTERFACE_NEW__();}
-            AInt.prototype.funcAInt = __INTERFACE_FUNC__;
-            AInt.FOO=1;
-            return AInt;
-        })();
-        var BAbs = this.BAbs = (function(){
-            function BAbs(){}
-            BAbs.prototype.funcBAbs = function(){};
-            BAbs.prototype.funcBAbsA = __ABSTRACT_FUNC__;
-            return BAbs;
-        })();
-        var C = this.C = (function(parent){
-            __extends(C,parent,arguments[1]);
-            function C(){
-                __extends(this,parent);
-            }
-            C.prototype.funcAInt = function(){};
-            C.prototype.funcBAbsA = function(){};
-            return C;
-        })(BAbs,[AInt]);
-    }).call(N.foo.foo1);
-
-    document.write(N.foo.foo1.AInt.FOO)
+var FooInt = (function() {
+    function FooInt() {
+        window.__IS_INHERITANCE__ = false;
+        __INTERFACE_NEW__();
+    }
+    FooInt.prototype.fooIntFunc1 = function(a, b) {
+        __INTERFACE_FUNC__();
+    };
+    return FooInt;
+})();
+var FooAbs = (function() {
+    function FooAbs() {
+        window.__IS_INHERITANCE__ = false;
+    }
+    __extends(FooAbs, null, arguments[1]);
+    FooAbs.prototype.__isAbstract__ = true;
+    FooAbs.prototype.fooAbsFunc1 = function(a, b) {
+        __ABSTRACT_FUNC__();
+    };
+    FooAbs.prototype.fooAbsFunc2 = function(a, b) {
+        return a + b + 10;
+    };
+    return FooAbs;
+})(null, [FooInt]);
+var FooParent = (function(parent) {
+    function FooParent() {
+        var __isInheritance = __IS_INHERITANCE__;
+        window.__IS_INHERITANCE__ = true;
+        parent.call(this);
+        this.foo = 5;
+        if (__isInheritance == false) {
+            this.__construct();
+        }
+    }
+    __extends(FooParent, parent);
+    FooParent.prototype.__construct = function() {
+        this.foo = 5;
+    };
+    FooParent.prototype.fooAbsFunc1 = function(a, b) {
+        parent.prototype.fooAbsFunc2.call(this, 1, 5);
+        return a + b;
+    };
+    FooParent.prototype.fooIntFunc1 = function(a, b) {
+        if (typeof b == 'undefined') b = 5;
+        return a + b + 5;
+    };
+    FooParent.fooStatic = function() {
+        return 10;
+    };
+    return FooParent;
+})(FooAbs);
+var FooChild = (function(parent) {
+    function FooChild() {
+        window.__IS_INHERITANCE__ = true;
+        parent.call(this);
+        this.foo = 6;
+    }
+    __extends(FooChild, parent);
+    FooChild.prototype.fooIntFunc1 = function(a, b) {
+        if (typeof b == 'undefined') b = 5;
+        return a + b;
+    };
+    FooChild.prototype.testParent = function() {
+        assert_(this.fooIntFunc1(5, 5), 10, 'testParent 1');
+        assert_(parent.prototype.fooIntFunc1.call(this, 5, 5), 15, 'testParent 2');
+    };
+    return FooChild;
+})(FooParent);
+var fooParent;
+fooParent = new FooParent();
+var fooChild;
+fooChild = new FooChild();
+assert_(fooParent instanceof FooParent, true, 'fooParent instanceof FooParent');
+assert_(fooParent instanceof FooInt, true, 'fooParent instanceof FooInt');
+assert_(fooChild instanceof FooChild, true, 'fooChild instanceof FooChild');
+assert_(fooChild instanceof FooParent, true, 'fooChild instanceof FooParent');
+assert_(fooChild instanceof FooAbs, true, 'fooChild instanceof FooAbs');
+assert_(fooChild instanceof FooInt, true, 'fooChild instanceof FooInt');
+assert_(FooChild.fooStatic(), 10, 'FooChild::fooStatic()');
+fooChild.testParent();
 ```
-[More Examples](https://github.com/tito10047/PhpTpJs/tree/master/test/code/jsPrinter/jsSrc/generated/NonPrivate)
+[More Examples](https://github.com/tito10047/PHP-to-Javascript/tree/master/test/code/jsPrinter/jsSrc/generated/JsPrinter)

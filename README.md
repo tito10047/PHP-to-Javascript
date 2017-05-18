@@ -63,6 +63,8 @@ go to `File/Setting/Tools/File Watchers` add custom watcher and set
   - `$FileName$`
   - `$ProjectFileDir$/phpJs` php scripts to generate
   - `$ProjectFileDir$/public/js/phpjs` output directory
+  - `[-p]` enable support of private properties and method. If is disabled, all private fields is converted as public
+
 - Output paths to refresh: `$ProjectFileDir$/public/js/phpjs`
 
 

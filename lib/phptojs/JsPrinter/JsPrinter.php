@@ -365,6 +365,11 @@ class ClosureHelper {
 
 class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
+	/**
+	 * @var bool
+	 */
+	private $usePrivate;
+
 	private static function WTF($message = 'WTF', $node = null) {
 		var_dump($node);
 		throw new Error($message);
@@ -375,9 +380,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	/** @var SourceWriter */
 	protected $writer;
 
-	public function __construct() {
+	public function __construct($usePrivate=true) {
 		$this->closureHelper = new ClosureHelper();
 		$this->writer = new SourceWriter();
+		$this->usePrivate=$usePrivate;
 	}
 
 	public function pParam(Node\Param $node) {
@@ -1249,12 +1255,12 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			return;
 		}
 		foreach ($node->props as $property) {
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE && $this->usePrivate) {
 				$this->closureHelper->addClassPrivatePropertyName($property->name);
 				$this->print_("__private(");
 			}
 			$this->print_("this");
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE && $this->usePrivate) {
 				$this->print_(")");
 			}
 			$this->print_(".");
@@ -1309,7 +1315,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->println("};");
 			$this->closureHelper->popVarScope();
 		} else {
-			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE) {
+			if ($node->type & Stmt\Class_::MODIFIER_PRIVATE && $this->usePrivate) {
 				$this->closureHelper->addClassPrivateMethodName($node->name);
 				$this->closureHelper->addClassPrivateMethod($node);
 			} else {

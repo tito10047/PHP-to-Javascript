@@ -34,6 +34,13 @@ if (isset($argv[3])) {
 }else{
 	$jsRootDir=$scriptDir;
 }
+
+$usePrivate=false;
+for($i=3;$i<$argc;$i++){
+	if ($argv[$i]=="-p"){
+		$usePrivate=true;
+	}
+}
 $phpFilename = $scriptDir . DIRECTORY_SEPARATOR . $scriptName;
 
 if (!file_exists($phpFilename)){
@@ -50,7 +57,7 @@ $phpContent = file_get_contents($scriptDir.DIRECTORY_SEPARATOR.$scriptName);
 $errorCount=0;
 try{
 	$parser = (new \PhpParser\ParserFactory())->create(\PhpParser\ParserFactory::PREFER_PHP7);
-	$jsPrinter = new \phptojs\JsPrinter\JsPrinter();
+	$jsPrinter = new \phptojs\JsPrinter\JsPrinter($usePrivate);
 
 	$stmts = $parser->parse($phpContent);
 	ob_start();

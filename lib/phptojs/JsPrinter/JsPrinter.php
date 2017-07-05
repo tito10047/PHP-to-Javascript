@@ -1488,6 +1488,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->printVarDef();
 		$this->popDelayToVar($keyVar);
 
+		$this->pushLoop(true);
 		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
@@ -1506,6 +1507,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_While(Stmt\While_ $node) {
+		$this->pushLoop(true);
 		$lopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
@@ -1524,6 +1526,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_Do(Stmt\Do_ $node) {
+		$this->pushLoop(true);
 		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
@@ -1546,6 +1549,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->p($node->cond);
 		$this->popDelayToVar($cond);
 
+		$this->pushLoop(true);
 		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->cases);
 		$this->popLoopPrintName($loopBody);
@@ -1775,7 +1779,6 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 
 	private function pushLoop($atStart) {
-		$this->closureHelper->pushLoop();
 		$this->pushDelay($atStart);
 	}
 

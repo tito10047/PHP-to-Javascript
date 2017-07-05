@@ -340,7 +340,13 @@ abstract class JsPrinterAbstract extends PrettyPrinterAbstract {
 	}
 
 	public function pExpr_BinaryOp_Concat(BinaryOp\Concat $node) {
-		$this->pInfixOp('Expr_BinaryOp_Concat', $node->left, ' . ', $node->right);
+		if ($node->left instanceof Scalar\String_ || $node->right instanceof Scalar\String_){
+			$this->p($node->left);
+			$this->writer->print_("+");
+			$this->p($node->right);
+		}else {
+			$this->pInfixOp('Expr_BinaryOp_Concat', $node->left, ' . ', $node->right);
+		}
 	}
 
 	public function pExpr_BinaryOp_Mod(BinaryOp\Mod $node) {

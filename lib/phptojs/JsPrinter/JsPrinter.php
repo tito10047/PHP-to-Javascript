@@ -77,6 +77,7 @@ class ClosureHelper {
 	private $classPrivatePropertiesNames = array();
 	private $classPrivateMethodsNames = array();
 	private $isInsidePrivateMethod = false;
+	private $loopIndex=0;
 
 	public function pushClass($className) {
 
@@ -94,7 +95,8 @@ class ClosureHelper {
 			10 => $this->classPrivatePropertiesNames,
 			11 => $this->classPrivateMethodsNames,
 			12 => $this->classPrivateMethods,
-			13 => $this->isInsidePrivateMethod
+			13 => $this->isInsidePrivateMethod,
+			14 => $this->loopIndex
 		);
 		$this->classConstants = array();
 		$this->classPublicMethods = array();
@@ -111,6 +113,7 @@ class ClosureHelper {
 		$this->classPrivateMethodsNames = array();
 		$this->classPrivateMethods = array();
 		$this->isInsidePrivateMethod = false;
+		$this->loopIndex=0;
 	}
 
 	public function popClass() {
@@ -129,6 +132,7 @@ class ClosureHelper {
 		$this->classPrivateMethodsNames = $data[11];
 		$this->classPrivateMethods = $data[12];
 		$this->isInsidePrivateMethod = $data[13];
+		$this->loopIndex = $data[14];
 	}
 
 	/** @return Stmt\ClassConst[] */
@@ -352,12 +356,17 @@ class ClosureHelper {
 	}
 
 	public function pushLoop() {
+		$this->loopIndex++;
+		return "__loop{$this->loopIndex}";
 	}
 
-	public function popLoop(&$loopName) {
+	public function popLoop() {
+		$this->loopIndex--;
 	}
 
 	public function getLoopName($num) {
+		$index = $this->loopIndex-$num+1;
+		return "__loop{$index}";
 	}
 
 
@@ -533,9 +542,9 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pScalar_String(Scalar\String_ $node) {
-		$str = addcslashes($node->value, '\'\\');
-		$str = str_replace(PHP_EOL, '\r\n\\' . PHP_EOL, $str);
-		$this->print_('\'' . $str . '\'');
+		$str = addcslashes($node->value, '"\\');
+		$str = str_replace(PHP_EOL, '\n\\' . PHP_EOL, $str);
+		$this->print_('"' . $str . '"');
 	}
 
 	public function pScalar_Encapsed(Scalar\Encapsed $node) {
@@ -1124,7 +1133,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 		$this->println("){");
 		$this->indent();
-		if ($this->closureHelper->classHasConstructor()) {
+		if ($this->closureHelper->classHasConstructor() || $node->extends) {
 			$this->println("var __isInheritance=__IS_INHERITANCE__;");
 		}
 		if ($node->extends) {
@@ -1155,9 +1164,13 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 				$this->println(");");
 			$this->outdent();
 			$this->println("}");
-		}else {
-			$this->println("if (this.__construct){");
-			$this->indentln("this.__construct.apply(this,arguments);");
+		}else if ($node->extends) {
+			$this->println("if (__isInheritance==false){");
+			$this->indent();
+				$this->println("if (parent.prototype.__construct){");
+				$this->indentln("parent.prototype.__construct.apply(this,arguments);");
+				$this->println("}");
+			$this->outdent();
 			$this->println("}");
 		}
 		$this->outdent()
@@ -1415,8 +1428,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_For(Stmt\For_ $node) {
+		$loopName = $this->closureHelper->pushLoop();
 
 		$this->pushDelay();
+		$this->println($loopName.":");
 		$this->print_("for(");
 		$this->pCommaSeparated($node->init);
 		$this->print_("; ");
@@ -1442,6 +1457,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			->println("{")
 			->print_($loopBody)
 			->println("}");
+		$this->closureHelper->popLoop();
 	}
 
 	public function pStmt_Foreach(Stmt\Foreach_ $node) {
@@ -1472,11 +1488,13 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->printVarDef();
 		$this->popDelayToVar($keyVar);
 
-		$this->pushLoop(true);
+		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
+		$this->closureHelper->popLoop();
 
 		$this->print_($vars)
+			->println($loopName.":")
 			->println("for (%{key} in %{expr}){", $keyName, $expression)
 			->indent()
 //			->println("if (!%{expr}.hasOwnProperty(%{key})) continue;", $expression, $keyName)
@@ -1488,15 +1506,17 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_While(Stmt\While_ $node) {
-		$this->pushLoop(true);
+		$lopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
+		$this->closureHelper->popLoop();
 
 		$this->pushDelay();
 		$this->p($node->cond);
 		$this->popDelayToVar($cond);
 
-		$this->println("while(%{cond}){", $cond)
+		$this->println($lopName.":")
+			->println("while(%{cond}){", $cond)
 			->indent()
 			->print_($loopBody)
 			->outdent()
@@ -1504,14 +1524,16 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_Do(Stmt\Do_ $node) {
-		$this->pushLoop(true);
+		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->stmts);
 		$this->popLoopPrintName($loopBody);
+		$this->closureHelper->popLoop();
 
 		$this->pushDelay(false);
 		$this->p($node->cond);
 		$this->popDelayToVar($cond);
 
+		$this->println($loopName.":");
 		$this->println("do {")
 			->indent()
 			->print_($loopBody)
@@ -1524,10 +1546,12 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$this->p($node->cond);
 		$this->popDelayToVar($cond);
 
-		$this->pushLoop(true);
+		$loopName = $this->closureHelper->pushLoop();
 		$this->pStmts($node->cases);
 		$this->popLoopPrintName($loopBody);
+		$this->closureHelper->popLoop();
 
+		$this->println($loopName.":");
 		$this->println("switch (%{cond}){", $cond)
 			->indent()
 			->print_($loopBody)
@@ -1598,7 +1622,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	public function pStmt_Break(Stmt\Break_ $node) {
 		$name = '';
 		if ($node->num !== null) {
-			$name = ' ' . $this->closureHelper->getLoopName($node->num);
+			$name = ' ' . $this->closureHelper->getLoopName($node->num->value);
 		}
 		$this->println('break %{name};', $name);
 	}
@@ -1606,7 +1630,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	public function pStmt_Continue(Stmt\Continue_ $node) {
 		$name = '';
 		if ($node->num !== null) {
-			$name = ' ' . $this->closureHelper->getLoopName($node->num);
+			$name = ' ' . $this->closureHelper->getLoopName($node->num->value);
 		}
 		$this->println('continue %{name};', $name);
 	}
@@ -1645,7 +1669,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 	}
 
 	public function pStmt_Global(Stmt\Global_ $node) {//TODO: implement this
-		$this->notImplemented(true, " global variables", true);
+		foreach($node->vars as $var){
+			/** @var Expr\Variable $var */
+			$this->closureHelper->useVar($var->name);
+		}
 	}
 
 	public function pStmt_StaticVar(Stmt\StaticVar $node) {//TODO: implement this
@@ -1705,7 +1732,7 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		$str = '';
 		foreach ($encapsList as $element) {
 			if (is_string($element)) {
-				$str = addcslashes($element, '\'\\');
+				$str = addcslashes($element, '\\'.$quote);
 				$str = str_replace(PHP_EOL, '\r\n\\' . PHP_EOL, $str);
 				$this->print_($str);
 				//$str .= addcslashes($element, "\n\r\t\f\v$" . $quote . "\\");
@@ -1754,10 +1781,6 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 	private function popLoopPrintName(&$body) {
 		$this->popDelayToVar($body);
-		$this->closureHelper->popLoop($loopName);
-		if ($loopName !== null) {
-			$this->print_($loopName . ":");
-		}
 	}
 
 	/**

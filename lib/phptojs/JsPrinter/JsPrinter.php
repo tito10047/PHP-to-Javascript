@@ -1107,6 +1107,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$this->pStmt_ClassMethod($method, true);
 		}
 
+		$this->print_($node->name)
+			->print_(".class='")
+			->print_($this->closureHelper->getClassName())
+			->println("';");
 		if ($this->closureHelper->getClassHasMagicMethods()) {
 			$this->println("var __handler = {")
 				->indent()
@@ -1212,7 +1216,6 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 		}
 		$this->writeDelay($classBody);
 		$this->writeDelay($methodsAndOthers);
-
 		$this->print_("})(");
 		if ($node->extends || $node->implements) {
 			if ($node->extends){

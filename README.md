@@ -31,6 +31,8 @@ In JS you have object wich is similarly to PHP arrays, but there is diferent ord
 
 If you need some like associated array you can also use [```jsphp\HashArray```](https://github.com/tito10047/PHP-to-Javascript/blob/master/test/code/jsPrinter/phpSrc/JsPrinter/array.js.php)
 
+You can't define class constant and static properties with same name. in JS will be override.
+
 #### Not suport ####
 - trait
 - goto

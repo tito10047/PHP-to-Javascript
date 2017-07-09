@@ -981,7 +981,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 
 			$this->indent();
 			$this->println("for(var __ClassName in this){");
-			$this->indentln('eval("var "+__ClassName+" = this."+__ClassName+";");');
+			$this->indent();
+			$this->println("if (__ClassName==='class') continue;");
+			$this->println('eval("var "+__ClassName+" = this."+__ClassName+";");');
+			$this->outdent();
 			$this->println("}");
 			$this->outdent();
 
@@ -1598,7 +1601,10 @@ class JsPrinter extends JsPrinterAbstract implements JsPrinterInterface {
 			$catches[] = $v;
 		}
 		$this->println("var %{vars};", join(", ", array_unique($catchesVars)));
-		$this->print_(join('else', $catches));
+		$this->print_(join('else ', $catches));
+		$this->println("else{");
+		$this->indentln("throw __e__;");
+		$this->println("}");
 		$this->outdent();
 		if ($node->finally !== null) {
 			$this->println("}finally{")

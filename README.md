@@ -1,6 +1,6 @@
 PHP to JavaScript convertor
 ===================
-#### See playground: [Online Convertor](http://php2javascript.runtimeconverter.com/) ####
+#### See playground: [Online Convertor](http://phptojs.orava.sk/) ####
 
 #### Suports ####
 - Namespaces, use
